@@ -8,6 +8,9 @@ img{
 	width:100px;
 	height:100px;
 }
+input{
+	width:10px;
+}
 </style>
 </head>
 <body>
@@ -37,7 +40,6 @@ img{
 </header>
 <main>
 	<h1>cart 화면</h1>
-	<form action="/member/prod_orderFromCart" method="post">
 		<table>
 			<tr>
 				<th>check All <input id="checkAll" type="checkbox"></th>
@@ -53,7 +55,10 @@ img{
 				<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
 				<td>[[${cartList.product.pName}]]</td>
 				<td>
-				<span id="dec">◀</span><input class="orderQuan" type="text" name="sQuan"  th:value="${cartList.cQuan}"><span id="inc">▶</span>
+					<span style="display:none;" id="dec">◀</span>
+					<span class="orderQuan" th:text="${cartList.cQuan}">0</span>
+					<span style="display:none;" id="inc">▶</span>
+					<button class="changeQuanBtn">수량변경</button>
 				</td>
 				<td>[[${cartList.product.pPrice}]]</td>
 				<td ><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
@@ -62,38 +67,75 @@ img{
 			</tr>
 		</table>
 		<button onclick="goToOrder()">주문하기</button>
-	</form>
-	
 </main>
 
 <script th:inline="javascript">
 
 
-const decBtns = document.querySelectorAll("#dec");
-const incBtns = document.querySelectorAll("#inc");
+
 const checkAll = document.querySelector("#checkAll");
 const deleteBtns = document.querySelectorAll(".deleteBtns");
 const checkBoxes = document.querySelectorAll(".checkBox");
+const changeQuanBtns = document.querySelectorAll(".changeQuanBtn");
 
-decBtns.forEach(btn=>{
+//수량 변경하기
+changeQuanBtns.forEach(btn=>{
 	btn.addEventListener("click", function(e){
-		let orderQuan = Number(e.target.parentElement.querySelector(".orderQuan").value);
-		orderQuan--;
-		if(orderQuan > 0){
-			e.target.parentElement.querySelector(".orderQuan").value = orderQuan;
-		}
+		const decBtn = e.target.parentElement.querySelector("#dec");     
+	    const incBtn = e.target.parentElement.querySelector("#inc");   
+		const quan = e.target.parentElement.querySelector(".orderQuan");
+	    const currentQuan = quan.textContent;
+	    
+	    
+	    if (btn.dataset.state === "editing") {
+            // 이미 수정중일때는 변경된 수량을 저장
+            const input = e.target.parentElement.querySelector("input[name='sQuan']");
+            const newQuan = input.value;
+            quan.textContent = newQuan;
+
+            // 화살표버튼 숨기기
+            decBtn.style.display = "none";
+            incBtn.style.display = "none";
+
+            // 확인버튼을 다시 수량변경으로 바꿔주기 + viewing으로 상태바꿔주기
+            btn.textContent = "수량변경";
+            btn.dataset.state = "viewing";
+        } else {
+          	//viewing상태일때는 수정할 수 있도록 바꿔주기
+
+            // 수량칸 input으로 바꿔주기
+    	    quan.innerHTML = "<input type='text' name='sQuan' value='"+ currentQuan + "'>";
+
+            // 화살표버튼보이기
+            decBtn.style.display = "inline";
+            incBtn.style.display = "inline";
+
+            // 확인버튼을 다시 수량변경으로 바꿔주고 + editing으로 상태바꿔주기
+            btn.textContent = "확인";
+            btn.dataset.state = "editing";
+            
+            
+          //클릭으로 수량바꿔주는 버튼 
+            decBtn.addEventListener("click", function(e){
+    				console.log(e.target.parentElement.querySelector("input").value)
+    				let orderQuan = Number(e.target.parentElement.querySelector("input").value);
+    				orderQuan--;
+    				if(orderQuan > 0){
+    					e.target.parentElement.querySelector("input").value = orderQuan;
+    				}
+    			})
+            incBtn.addEventListener("click", function(e){
+    				let orderQuan = Number(e.target.parentElement.querySelector("input").value);
+    				orderQuan++;
+    				if(orderQuan > 1){
+    					e.target.parentElement.querySelector("input").value = orderQuan;
+    				}
+    			}) 
+        }
 	})
 })
 
-incBtns.forEach(btn=>{
-	btn.addEventListener("click", function(e){
-		let orderQuan = Number(e.target.parentElement.querySelector(".orderQuan").value);
-		orderQuan++;
-		if(orderQuan > 1){
-			e.target.parentElement.querySelector(".orderQuan").value = orderQuan;
-		}
-	})
-})
+
 
 deleteBtns.forEach(btn=>{
 	btn.addEventListener("click", function(e){
@@ -117,19 +159,7 @@ checkBoxes.forEach(box => {
         }
     });
 });
-function goToOrder(){
-	const params = new URLSearchParams();
-	let i=1;
-	checkBoxes.forEach(box => {
-		if(box.checked){
-			let pno = box.parentElement.parentElement.querySelector("#pno");
-            params.append('pno'+i, pno.innerText);
-            i++;
-		}
-	})
-	console.log(params.toString())
-	location.href="/member/prod_orderFromCart?"+params.toString();
-}
+
 </script>
 
 </body>

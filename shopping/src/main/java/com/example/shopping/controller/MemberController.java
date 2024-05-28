@@ -42,7 +42,8 @@ public class MemberController {
 	
 	@RequestMapping("/mem_regist")
 	private String memRegist(Member member) {
-		memberRepo.save(null);
+		member.setRole("ROLE_MEMBER");		
+		memberRepo.save(member);
 		return "redirect:/member/login";
 	}
 	
