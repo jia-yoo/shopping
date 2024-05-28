@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>상품 리스트 조회</h1>
+	<table>
+	
+		<tr>
+			<th>상품이미지</th>
+			<th>상품번호</th>
+			<th>상품명</th>
+			<th>상품 가격</th>
+			<th>현 보유수량</th>
+			<th>총 액</th>
+			<th>상태 (판매/품절)</th>
+			<th>상품 상세 설명</th>
+		</tr>
+		<tr th:each="list : ${list}">
+			<td th:if="${list.fileName != null}"><img th:src="@{|/images/user/${list.fileName}|}"></td>
+			<td th:if="${list.fileName == null}">이미지 없음</td>
+			<td>[[${list.pno}]]</td>
+			<td><a th:href="@{/admin/prod_detail(pno=${list.pno})}">[[${list.pName}]]</a></td>
+			<td>[[${list.pPrice}]]</td>
+			<td>[[${list.pQuan}]]</td>
+			<td>[[${list.pPrice*list.pQuan}]]</td>
+			<td>[[${list.status}]]</td>
+			<td>[[${list.description !=null ? list.description : "설명 없음"}]]</td>
+		</tr>
+		
+	</table>
+</body>
+</html>

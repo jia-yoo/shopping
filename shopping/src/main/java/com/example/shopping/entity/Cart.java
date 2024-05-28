@@ -18,25 +18,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-@Table(name="sales")
-public class Sales extends BaseEntity{
+@Table(name="cart")
+public class Cart extends BaseEntity{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long sno;
+	private Long cno;
 	
 	@ManyToOne
 	@JoinColumn(name="pno", referencedColumnName = "pno")
 	private Product product;
 	
-	@Column(nullable=false, length=20)
-	private int sQuan;
-	
 	@ManyToOne
 	@JoinColumn(nullable=false, name="mno", referencedColumnName = "mno")
 	private Member member;
 	
-	@Column(nullable=false, length=20)
-	private int orderNo;
-
+	@Column(nullable=false)
+	private int cQuan;
 
 }

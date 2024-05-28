@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>상품등록</h1>
+<form action="/admin/prod_regist" enctype="multipart/form-data" method="post">
+<input type="text" name="pName" placeholder="상품명">
+<input type="text" name="pQuan" placeholder="상품수량">
+<input type="text" name="pPrice"  placeholder="상품가격">
+<input type="radio" name="status" value="onStock">판매
+<input type="radio" name="status" value="soldout">품절
+<input type="file" name="img">
+<textarea name="description" placeholder="상품상세설명"></textarea>
+<input type="submit" value="상품등록하기">
+
+</form>
+</body>
+</html>

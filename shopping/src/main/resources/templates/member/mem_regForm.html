@@ -4,19 +4,8 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
-<style>
-li{
-    width: 240px; height: 240px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
-    background-color: #fff;
-    float: left;
-    margin: 45px;
-    font: 900 18px/1 'Pretendard-Regular';
-    text-align: center;
-}
-</style>
 </head>
+
 <body>
 <header>
 	<nav>
@@ -37,32 +26,20 @@ li{
 		<th:block th:if="${session.id != null}">
 			<span>[[${session.id}]] 님 어서오세요 😉<span>
 			<a href="/member/logout">로그아웃하기</a>
-			<a href="/member/myPage">마이페이지</a>
 		</th:block>
 		<a href="/admin/admin_main">관리자페이지로가기</a>
 	</nav>
 </header>
 <main>
-	<div class="mostSoldItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-	<div class="newestItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-
+	<form action="/member/mem_regist" method="post">
+		<input type="text" name="userName" placeholder="아이디*">
+		<input type="password" name="pw" placeholder="비밀번호*">
+		<input type="password" name="pw2" placeholder="비밀번호확인*">
+		<input type="text" name="name" placeholder="이름*">
+		<input type="text" name="addr" placeholder="주소*">
+		<input type="text" name="tel" placeholder="번호*">
+		<input type="submit" value="제출">
+	</form>
 </main>
-<script th:inline="javascript">
-
-
-</script>
-
 </body>
 </html>

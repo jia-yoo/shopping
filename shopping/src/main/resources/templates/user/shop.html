@@ -5,7 +5,11 @@
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
-li{
+img{
+	width:100px;
+	height:100px;
+}
+ul{
     width: 240px; height: 240px;
     border: 1px solid #e4e4e4;
     border-radius: 10px;
@@ -43,26 +47,30 @@ li{
 	</nav>
 </header>
 <main>
-	<div class="mostSoldItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
+	<h1>상품 리스트</h1>
+	
+	<div>
+		<ul th:each="list : ${list}">
+			<li class="pno" style="display:none;">[[${list.pno}]]</li>
+			<li><img th:src="@{|/images/user/${list.fileName}|}"></li>
+			<li>[[${list.pName}]]</li>	
+			<li>[[${list.pPrice}]]</li>	
+			<li th:if="${list.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
-	<div class="newestItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-
 </main>
 <script th:inline="javascript">
+const items = document.querySelectorAll("li img");
 
+items.forEach(item=>{
+	item.addEventListener("click", function(e){
+		console.log(e.target)
+		const pno = e.target.parentElement.parentElement.querySelector(".pno").innerText;
+		location.href="/user/prod_detail?pno="+pno;
+		
+	})
+})
 
 </script>
-
 </body>
 </html>

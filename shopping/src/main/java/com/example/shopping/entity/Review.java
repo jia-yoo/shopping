@@ -19,11 +19,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @Table(name="review")
-public class Review {
+public class Review extends BaseEntity{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long rno;
+	private Long rno;
 	
 	@ManyToOne
 	@JoinColumn(nullable=false, name = "pno",referencedColumnName = "pno")
@@ -34,7 +34,7 @@ public class Review {
 	@JoinColumn(nullable=false, name = "mno",referencedColumnName = "mno")
 	private Member member;
 	
-	@Column(nullable=false, length=1000)
+	@Column(nullable=false, columnDefinition = "TEXT")
 	private String content;
 	
 	@Column

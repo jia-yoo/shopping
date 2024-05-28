@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>상품 상세조회</h1>
+<table>
+    <tr>
+	    <td colspan="2" th:if="${prod.fileName != null}">
+			<img th:src="@{|/images/user/${prod.fileName}|}">
+		</td>
+		 <td colspan="2" th:if="${prod.fileName == null}">
+			이미지 없음
+		</td>
+	</tr>
+	<tr>
+		<th>상품번호</th>
+		<td>[[${prod.pno}]]</td>
+	</tr>
+	<tr>
+		<th>상품명</th>
+		<td>[[${prod.pName}]]</td>
+	</tr>
+	<tr>
+		<th>상품 가격</th>
+		<td>[[${prod.pPrice}]]</td>
+	</tr>
+	<tr>
+		<th>현 보유수량</th>
+		<td>[[${prod.pQuan}]]</td>
+	</tr>
+	<tr>
+		<th>상태 (판매/품절)</th>
+		<td>[[${prod.status}]]</td>
+	</tr>
+	<tr>
+		<th>상품 상세 설명</th>
+		<td>[[${prod.description}]]</td>
+	</tr>
+</table>
+
+<a th:href="@{/admin/prod_edit(pno=${prod.pno})}">상품 수정하기</a>
+<a th:href="@{/admin/prod_delete(pno=${prod.pno})}">상품 삭제하기</a>
+
+</body>
+</html>

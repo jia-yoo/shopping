@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>상품수정</h1>
+<form th:action="@{/admin/prod_update(pno=${prod.pno})}" enctype="multipart/form-data" method="post">
+	<span th:if="${prod.fileName != null}">
+		<img th:src="@{|/images/user/${prod.fileName}|}">
+	</span>
+	<span th:if="${prod.fileName == null}">
+		이미지 없음
+	</span>
+	<input type="file" name="img">
+	<input type="text" name="pName" placeholder="상품명" th:value="${prod.pName}">
+	<input type="text" name="pQuan" placeholder="상품수량" th:value="${prod.pQuan}">
+	<input type="text" name="pPrice"  placeholder="상품가격" th:value="${prod.pPrice}">
+	
+	<input type="radio" name="status" value="onStock" th:checked="${prod.status == 'onStock'}">판매
+	<input type="radio" name="status" value="soldout" th:checked="${prod.status == 'soldout'}">품절
+	<textarea placeholder="상품상세설명" th:value="${prod.description}"></textarea>
+	<input type="submit" value="상품수정하기">
+</form>
+</body>
+</html>

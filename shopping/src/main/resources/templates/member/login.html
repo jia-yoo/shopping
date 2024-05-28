@@ -4,18 +4,6 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
-<style>
-li{
-    width: 240px; height: 240px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
-    background-color: #fff;
-    float: left;
-    margin: 45px;
-    font: 900 18px/1 'Pretendard-Regular';
-    text-align: center;
-}
-</style>
 </head>
 <body>
 <header>
@@ -43,26 +31,20 @@ li{
 	</nav>
 </header>
 <main>
-	<div class="mostSoldItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-	<div class="newestItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-
-</main>
+	<form action="/member/mem_login" method="post">
+		<input type="text" name="userName" placeholder="아이디*">
+		<input type="password" name="pw" placeholder="비밀번호*">
+		<input type="submit" value="제출">
+	</form>
+</main>	
 <script th:inline="javascript">
-
-
+	if([[${result}]] != null){
+		if([[${result}]] == "wrongPw"){
+			alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요");
+		}else if([[${result}]] == "noId"){
+			alert("입력하신 아이디에 일치하는 회원정보가 없습니다. 다시 입력해주세요");
+		}
+	}
 </script>
-
 </body>
 </html>

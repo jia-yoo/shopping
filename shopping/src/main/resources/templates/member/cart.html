@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+img{
+	width:100px;
+	height:100px;
+}
+</style>
+</head>
+<body>
+<header>
+	<nav>
+		<a href="/"><img id="logo" style="width:50px; height:50px;" src="/img/logo.jpg"></a>
+		<a href="/user/shop">shop</a>
+		<div class="cart-wrap" onclick="location.href='/member/cart'">
+			<div class="cart-image">
+				<img style="width:50px; height:50px;" src="/img/shopping_cart.png">
+			</div>
+			<div  class="cart-text">
+				<span>0</span>
+			</div>
+		</div>
+		<th:block th:if="${session.id == null}">
+			<a href="/member/mem_regForm">회원가입하기</a>
+			<a href="/member/login">로그인하기</a>
+		</th:block>
+		<th:block th:if="${session.id != null}">
+			<span>[[${session.id}]] 님 어서오세요 😉<span>
+			<a href="/member/logout">로그아웃하기</a>
+			<a href="/member/myPage">마이페이지</a>
+		</th:block>
+		<a href="/admin/admin_main">관리자페이지로가기</a>
+	</nav>
+</header>
+<main>
+	<h1>cart 화면</h1>
+	<table>
+		<tr>
+			<th>checkAll</th>
+			<th>상품 사진</th>
+			<th>상품명</th>
+			<th>상품 수량</th>
+			<th>상품 가격</th>
+			<th>총 가격</th>
+			<th>삭제</th>
+		</tr>
+		<tr th:each="cartList : ${cartList}">
+			<td><input type="checkbox"></td>
+			<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
+			<td>[[${cartList.product.pName}]]</td>
+			<td>
+			<span id="dec">◀</span><span id="orderQuan">[[${cartList.cQuan}]]</span><span id="inc">▶</span>
+			</td>
+			<td>[[${cartList.product.pPrice}]]</td>
+			<td th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
+			<td class="deleteBtns">❌</td>
+			<td style="display:none;" id="pno">[[${cartList.product.pno}]]</td>
+		</tr>
+	
+	</table>
+</main>
+
+<script th:inline="javascript">
+
+
+const decBtn = document.querySelector("#dec");
+const incBtn = document.querySelector("#inc");
+const orderQuanEl = document.querySelector("#orderQuan");
+const deleteBtns = document.querySelectorAll(".deleteBtns");
+
+decBtn.addEventListener("click", function(e){
+	let orderQuan = Number(orderQuanEl.innerText);
+	orderQuan--;
+	if(orderQuan > 0){
+		orderQuanEl.innerHTML = orderQuan;
+	}
+})
+incBtn.addEventListener("click", function(e){
+	let orderQuan = Number(orderQuanEl.innerText);
+	orderQuan++;
+	if(orderQuan > 1){
+		orderQuanEl.innerHTML = orderQuan;
+	}
+})
+deleteBtns.forEach(btn=>{
+	btn.addEventListener("click", function(e){
+	let pno = e.target.parentElement.querySelector("#pno").innerText;
+	location.href="/member/deleteFromCart?pno="+pno;
+})
+})
+</script>
+
+</body>
+</html>

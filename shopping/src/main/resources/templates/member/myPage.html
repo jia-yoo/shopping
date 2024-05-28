@@ -3,17 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
-li{
-    width: 240px; height: 240px;
-    border: 1px solid #e4e4e4;
-    border-radius: 10px;
-    background-color: #fff;
-    float: left;
-    margin: 45px;
-    font: 900 18px/1 'Pretendard-Regular';
-    text-align: center;
+img{
+	width:100px;
+	height:100px;
 }
 </style>
 </head>
@@ -43,22 +36,47 @@ li{
 	</nav>
 </header>
 <main>
-	<div class="mostSoldItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-	<div class="newestItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-		</ul>
-	</div>
-
+	<h1>마이페이지</h1>
+	<table>
+		<tr>
+			<th>회원 아이디</th>
+			<td>[[${member.userName}]]</td>
+		</tr>
+		<tr>
+			<th>회원 이름</th>
+			<td>[[${member.name}]]</td>
+		</tr>
+		<tr>
+			<th>회원 주소</th>
+			<td>[[${member.addr}]]</td>
+		</tr>
+		<tr>
+			<th>회원 전화번호</th>
+			<td>[[${member.tel}]]</td>
+		</tr>
+	</table>
+	<button>회원정보수정하기</button>
+	<div>주문내역 리스트</div>
+	<table>
+		<tr>
+			<th>주문 번호</th>
+			<td>[[${sales.sno}]]</td>
+		</tr>
+		<tr>
+			<th>회원 이름</th>
+			<td>[[${member.name}]]</td>
+		</tr>
+		<tr>
+			<th>회원 주소</th>
+			<td>[[${member.addr}]]</td>
+		</tr>
+		<tr>
+			<th>회원 전화번호</th>
+			<td>[[${member.tel}]]</td>
+		</tr>
+	</table>
 </main>
+
 <script th:inline="javascript">
 
 

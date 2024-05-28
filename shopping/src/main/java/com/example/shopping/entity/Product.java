@@ -17,11 +17,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @Table(name="product")
-public class Product {
+public class Product extends BaseEntity{
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long pno;
+	private Long pno;
 	
 	@Column(nullable=false, length=20)
 	private String pName;
@@ -31,8 +31,12 @@ public class Product {
 	private int pPrice;
 	@Column(nullable=false, length=100)
 	private String status;
-	@Column(length=300)
-	private String imgUrl;
-	@Column(length=1000)
-	private String desc;
+	@Column
+	private String fileName;
+	@Column
+	private String filePath;
+	@Column
+	private Long fileSize;
+	@Column(columnDefinition = "TEXT")
+	private String description;
 }
