@@ -37,60 +37,99 @@ img{
 </header>
 <main>
 	<h1>cart 화면</h1>
-	<table>
-		<tr>
-			<th>checkAll</th>
-			<th>상품 사진</th>
-			<th>상품명</th>
-			<th>상품 수량</th>
-			<th>상품 가격</th>
-			<th>총 가격</th>
-			<th>삭제</th>
-		</tr>
-		<tr th:each="cartList : ${cartList}">
-			<td><input type="checkbox"></td>
-			<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
-			<td>[[${cartList.product.pName}]]</td>
-			<td>
-			<span id="dec">◀</span><span id="orderQuan">[[${cartList.cQuan}]]</span><span id="inc">▶</span>
-			</td>
-			<td>[[${cartList.product.pPrice}]]</td>
-			<td th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
-			<td class="deleteBtns">❌</td>
-			<td style="display:none;" id="pno">[[${cartList.product.pno}]]</td>
-		</tr>
+	<form action="/member/prod_orderFromCart" method="post">
+		<table>
+			<tr>
+				<th>check All <input id="checkAll" type="checkbox"></th>
+				<th>상품 사진</th>
+				<th>상품명</th>
+				<th>상품 수량</th>
+				<th>상품 가격</th>
+				<th>총 가격</th>
+				<th>삭제</th>
+			</tr>
+			<tr th:each="cartList : ${cartList}">
+				<td><input class="checkBox" type="checkbox"></td>
+				<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
+				<td>[[${cartList.product.pName}]]</td>
+				<td>
+				<span id="dec">◀</span><input class="orderQuan" type="text" name="sQuan"  th:value="${cartList.cQuan}"><span id="inc">▶</span>
+				</td>
+				<td>[[${cartList.product.pPrice}]]</td>
+				<td ><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
+				<td th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
+				<td class="deleteBtns">❌</td>
+			</tr>
+		</table>
+		<button onclick="goToOrder()">주문하기</button>
+	</form>
 	
-	</table>
 </main>
 
 <script th:inline="javascript">
 
 
-const decBtn = document.querySelector("#dec");
-const incBtn = document.querySelector("#inc");
-const orderQuanEl = document.querySelector("#orderQuan");
+const decBtns = document.querySelectorAll("#dec");
+const incBtns = document.querySelectorAll("#inc");
+const checkAll = document.querySelector("#checkAll");
 const deleteBtns = document.querySelectorAll(".deleteBtns");
+const checkBoxes = document.querySelectorAll(".checkBox");
 
-decBtn.addEventListener("click", function(e){
-	let orderQuan = Number(orderQuanEl.innerText);
-	orderQuan--;
-	if(orderQuan > 0){
-		orderQuanEl.innerHTML = orderQuan;
-	}
+decBtns.forEach(btn=>{
+	btn.addEventListener("click", function(e){
+		let orderQuan = Number(e.target.parentElement.querySelector(".orderQuan").value);
+		orderQuan--;
+		if(orderQuan > 0){
+			e.target.parentElement.querySelector(".orderQuan").value = orderQuan;
+		}
+	})
 })
-incBtn.addEventListener("click", function(e){
-	let orderQuan = Number(orderQuanEl.innerText);
-	orderQuan++;
-	if(orderQuan > 1){
-		orderQuanEl.innerHTML = orderQuan;
-	}
+
+incBtns.forEach(btn=>{
+	btn.addEventListener("click", function(e){
+		let orderQuan = Number(e.target.parentElement.querySelector(".orderQuan").value);
+		orderQuan++;
+		if(orderQuan > 1){
+			e.target.parentElement.querySelector(".orderQuan").value = orderQuan;
+		}
+	})
 })
+
 deleteBtns.forEach(btn=>{
 	btn.addEventListener("click", function(e){
 	let pno = e.target.parentElement.querySelector("#pno").innerText;
 	location.href="/member/deleteFromCart?pno="+pno;
+	})
 })
+checkAll.addEventListener("click", function(e){
+	 const allChecked = Array.from(checkBoxes).every(box => box.checked);
+	  checkBoxes.forEach(box => {
+	        box.checked = !allChecked;
+	    });
+	
 })
+checkBoxes.forEach(box => {
+    box.addEventListener('click', function() {
+        if (!this.checked) {
+            checkAll.checked = false;
+        } else if (Array.from(checkBoxes).every(box => box.checked)) {
+            checkAll.checked = true;
+        }
+    });
+});
+function goToOrder(){
+	const params = new URLSearchParams();
+	let i=1;
+	checkBoxes.forEach(box => {
+		if(box.checked){
+			let pno = box.parentElement.parentElement.querySelector("#pno");
+            params.append('pno'+i, pno.innerText);
+            i++;
+		}
+	})
+	console.log(params.toString())
+	location.href="/member/prod_orderFromCart?"+params.toString();
+}
 </script>
 
 </body>

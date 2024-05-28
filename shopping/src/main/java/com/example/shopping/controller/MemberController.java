@@ -1,5 +1,7 @@
 package com.example.shopping.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,8 @@ public class MemberController {
 	private ProductRepository productRepo;
 	@Autowired
 	private CartRepository cartRepo;
-	
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+	String dateString = formatter.format(new Date());
 	@RequestMapping("/mem_regForm")
 	private void memRegForm() {
 	}
@@ -67,7 +70,7 @@ public class MemberController {
 		request.getSession().invalidate();
 		return "redirect:/";
 	}
-	
+	//상세페이지에서 바로 주문할경우
 	@RequestMapping("/prod_order")
 	private @ResponseBody String memProdOrder(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("sQuan") int sQuan,Model model) {
 		String userName = (String) request.getSession().getAttribute("id");
@@ -76,6 +79,7 @@ public class MemberController {
 		sale.setSQuan(sQuan);
 		sale.setProduct(productRepo.findById(pno).get());
 		
+		sale.setOrderNo(dateString + userName);
 		//sales 테이블에 더해주기
 		salesRepo.save(sale);
 	
@@ -85,6 +89,11 @@ public class MemberController {
 		int newQuan = pQuan-sQuan;
 		prod.setPQuan(newQuan);
 		productRepo.save(prod);
+		return "true";
+	}
+	@RequestMapping("/prod_orderFromCart")
+	private String prodOrderFromCart(@RequestParam("pno") Long pno) {
+		System.out.println(pno);
 		return "true";
 	}
 	@RequestMapping("/cart")
@@ -122,5 +131,6 @@ public class MemberController {
 		String userName = (String) request.getSession().getAttribute("id");
 		Member member = memberRepo.findByUserName(userName).get();
 		model.addAttribute("member", member );
+		
 	}
 }

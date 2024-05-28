@@ -36,7 +36,7 @@ public class Sales extends BaseEntity{
 	private Member member;
 	
 	@Column(nullable=false, length=20)
-	private int orderNo;
+	private String orderNo;
 
 
 }
