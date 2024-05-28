@@ -3,10 +3,12 @@ package com.example.shopping.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -93,8 +95,13 @@ public class MemberController {
 		return "true";
 	}
 	@RequestMapping("/prod_orderFromCart")
-	private String prodOrderFromCart(@RequestParam("pno") Long pno) {
-		System.out.println(pno);
+	private @ResponseBody String prodOrderFromCart(@RequestBody List<Map<String, Object>> orderItems) {
+		 for (Map<String, Object> item : orderItems) {
+	            String pno = (String) item.get("pno");
+	            int quan = Integer.parseInt((String) item.get("quan"));
+	            System.out.println("Product No: " + pno + ", Quantity: " + quan);
+	            // 여기서 주문 항목에 대한 추가 처리 (예: 데이터베이스 저장 등)
+	        }
 		return "true";
 	}
 	@RequestMapping("/cart")

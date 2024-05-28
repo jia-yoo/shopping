@@ -135,8 +135,6 @@ changeQuanBtns.forEach(btn=>{
 	})
 })
 
-
-
 deleteBtns.forEach(btn=>{
 	btn.addEventListener("click", function(e){
 	let pno = e.target.parentElement.querySelector("#pno").innerText;
@@ -159,6 +157,42 @@ checkBoxes.forEach(box => {
         }
     });
 });
+
+function goToOrder(){
+	const selectedItems = [];
+
+    checkBoxes.forEach(box => {
+        if (box.checked) {
+            const pno = box.dataset.pno;
+            const quan = box.parentElement.parentElement.querySelector(".orderQuan").textContent;
+            selectedItems.push({ pno: pno, quan: quan });
+        }
+    });
+
+    const data = JSON.stringify(selectedItems);
+
+    fetch("/member/prod_orderFromCart", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: data
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error("Network response was not ok.");
+    })
+    .then(data => {
+        console.log(data);
+        // 성공적으로 주문이 완료되었을 때 추가 작업을 여기에 작성
+//         location.href = "/member/orderConfirmation";
+    })
+    .catch(error => {
+        console.error("There was a problem with the fetch operation:", error);
+    });
+}
 
 </script>
 
