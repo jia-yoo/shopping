@@ -5,7 +5,11 @@
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
-li{
+img{
+	width:100px;
+	height:100px;
+}
+ul{
     width: 240px; height: 240px;
     border: 1px solid #e4e4e4;
     border-radius: 10px;
@@ -31,36 +35,51 @@ li{
 			</div>
 		</div>
 		<th:block th:if="${session.id == null}">
-			<a href="/member/mem_regForm">회원가입하기</a>
-			<a href="/member/login">로그인하기</a>
+			<a href="/user/mem_regForm">회원가입하기</a>
+			<a href="/user/login">로그인하기</a>
 		</th:block>
 		<th:block th:if="${session.id != null}">
 			<span>[[${session.id}]] 님 어서오세요 😉<span>
 			<a href="/member/logout">로그아웃하기</a>
 			<a href="/member/myPage">마이페이지</a>
 		</th:block>
-		<a href="/admin/admin_main">관리자페이지로가기</a>
+		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
 	</nav>
 </header>
 <main>
 	<div class="mostSoldItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
+		<h3>인기 상품 </h3>
+		<ul th:each="mostSoldList : ${mostSoldList}">
+			<li class="pno" style="display:none;">[[${mostSoldList.pno}]]</li>
+			<li><img th:src="@{|/images/user/${mostSoldList.fileName}|}"></li>
+			<li><a th:href="@{/user/prod_detail(pno=${mostSoldList.pno})}">[[${mostSoldList.pName}]]</a></li>	
+			<li>[[${mostSoldList.pPrice}]]</li>	
+			<li th:if="${mostSoldList.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
 	<div class="newestItems">
-		<ul>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
-			<li onclick="location.href='/'"></li>
+	<h3>신상품 </h3>
+		<ul th:each="prodList : ${prodList}">
+			<li class="pno" style="display:none;">[[${prodList.pno}]]</li>
+			<li><img th:src="@{|/images/user/${prodList.fileName}|}"></li>
+			<li><a th:href="@{/user/prod_detail(pno=${prodList.pno})}">[[${prodList.pName}]]</a></li>	
+			<li>[[${prodList.pPrice}]]</li>	
+			<li th:if="${prodList.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
 
 </main>
 <script th:inline="javascript">
+const items = document.querySelectorAll("li img");
 
+items.forEach(item=>{
+	item.addEventListener("click", function(e){
+		console.log(e.target)
+		const pno = e.target.parentElement.parentElement.querySelector(".pno").innerText;
+		location.href="/user/prod_detail?pno="+pno;
+		
+	})
+})
 
 </script>
 

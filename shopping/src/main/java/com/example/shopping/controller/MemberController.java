@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.shopping.entity.Cart;
 import com.example.shopping.entity.Member;
 import com.example.shopping.entity.Product;
+import com.example.shopping.entity.Review;
 import com.example.shopping.entity.Sales;
 import com.example.shopping.repository.CartRepository;
 import com.example.shopping.repository.MemberRepository;
 import com.example.shopping.repository.ProductRepository;
+import com.example.shopping.repository.ReviewRepository;
 import com.example.shopping.repository.SalesRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,21 +38,15 @@ public class MemberController {
 	private ProductRepository productRepo;
 	@Autowired
 	private CartRepository cartRepo;
-	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
-	String dateString = formatter.format(new Date());
-	@RequestMapping("/mem_regForm")
-	private void memRegForm() {
-	}
+	@Autowired
+	private ReviewRepository reviewRepo;
+	
 	
 	@RequestMapping("/mem_regist")
 	private String memRegist(Member member) {
 		member.setRole("ROLE_MEMBER");		
 		memberRepo.save(member);
 		return "redirect:/member/login";
-	}
-	
-	@RequestMapping("/login")
-	private void login() {
 	}
 	
 	@RequestMapping("/mem_login")
@@ -82,7 +78,11 @@ public class MemberController {
 		sale.setSQuan(sQuan);
 		sale.setProduct(productRepo.findById(pno).get());
 		
+		//날짜+아이디로 유일한 주문번호 생성
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+    	String dateString = formatter.format(new Date());
 		sale.setOrderNo(dateString + userName);
+		
 		//sales 테이블에 더해주기
 		salesRepo.save(sale);
 	
@@ -95,14 +95,49 @@ public class MemberController {
 		return "true";
 	}
 	@RequestMapping("/prod_orderFromCart")
-	private @ResponseBody String prodOrderFromCart(@RequestBody List<Map<String, Object>> orderItems) {
-		 for (Map<String, Object> item : orderItems) {
-	            String pno = (String) item.get("pno");
+	private @ResponseBody String prodOrderFromCart(HttpServletRequest request, @RequestBody List<Map<String, Object>> orderItems) {
+		String userName = (String) request.getSession().getAttribute("id"); 
+		Long mno = memberRepo.findByUserName(userName).get().getMno();
+		for (Map<String, Object> item : orderItems) {
+	            Long pno = Long.parseLong((String) item.get("pno"));
 	            int quan = Integer.parseInt((String) item.get("quan"));
-	            System.out.println("Product No: " + pno + ", Quantity: " + quan);
-	            // 여기서 주문 항목에 대한 추가 처리 (예: 데이터베이스 저장 등)
+	            //product테이블에서 pQuan이 주문하려는 quan보다 많은지 check
+	            Product prod = productRepo.findById(pno).get();
+	    		int pQuan = prod.getPQuan();
+	    		if(pQuan >= quan) {
+	    			 Sales sale = new Sales();
+	 	            sale.setMember(memberRepo.findByUserName(userName).get());
+	 	            sale.setSQuan(quan);
+	 	            sale.setProduct(productRepo.findById(pno).get());
+	 	        	//날짜+아이디로 유일한 주문번호 생성
+	 	            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	 	        	String dateString = formatter.format(new Date());
+	 	            sale.setOrderNo(dateString + userName);
+	 	            //sales 테이블에 더해주기
+	 	    		salesRepo.save(sale);
+	 	    		
+	 	    		//product테이블에서 pQuan 줄여주기
+	 	    		int newQuan = pQuan-quan;
+	 	    		prod.setPQuan(newQuan);
+	 	    		productRepo.save(prod);
+	 	    		
+	 	    		//장바구니 내에 주문된 아이템 지워주기
+	 	    		cartRepo.deleteByMnoAndPno(mno, pno);
+	 	    		return "true";
+	    		}else {
+//	    			System.out.println("수량부족스");
+//	    			String pname = prod.getPName();
+//	    			Map<String,String> lessItem = new HashMap<>();
+//	    			lessItem.put("pname", pname);
+//	    			 // Gson 객체 생성
+//	    	        Gson gson = new Gson();
+//	    	        // Map을 JSON 문자열로 변환
+//	    	        String json = gson.toJson(lessItem);
+//	    	        System.out.println(json);
+	    			return "false";
+	    		}
 	        }
-		return "true";
+		return "false";
 	}
 	@RequestMapping("/cart")
 	private void cart(HttpServletRequest request, Model model) {
@@ -138,7 +173,42 @@ public class MemberController {
 	private void myPage(HttpServletRequest request, Model model) {
 		String userName = (String) request.getSession().getAttribute("id");
 		Member member = memberRepo.findByUserName(userName).get();
+		List<String> orderNoList = salesRepo.findOrderNoByMno(member.getMno());
 		model.addAttribute("member", member );
-		
+		model.addAttribute("orderNoList", orderNoList );
+	}
+	@RequestMapping("/order_detail")
+	private void orderDetail(@RequestParam("orderNo") String orderNo, Model model) {
+		List<Sales> order = salesRepo.findByOrderNo(orderNo);
+		model.addAttribute("order", order);
+		model.addAttribute("orderNo", orderNo);
+	}
+	@RequestMapping("/cancel_order")
+	private @ResponseBody String cancelOrder(@RequestParam("orderNo") String orderNo) {
+		salesRepo.deleteByOrderNo(orderNo);
+		return "true";
+	}
+	@RequestMapping("/reg_review")
+	private String regReview(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("content") String content, Model model) {
+		String userName = (String) request.getSession().getAttribute("id");
+		Member member = memberRepo.findByUserName(userName).get();
+		Long mno = member.getMno();
+		Product prod = productRepo.findById(pno).get();
+		Review review = new Review();
+		review.setMember(member);
+		review.setProduct(prod);
+		review.setContent(content);
+
+		//이 상품을 실제 구매한적있는지 체크
+		if(!salesRepo.findByMnoAndPno(mno, pno).isEmpty()) {
+			//우리사이트에서 실제 구매한적 있는 경우
+			review.setActualPurchase(1);
+		}else{
+			//우리사이트에서 구매한적 없는 경우
+			review.setActualPurchase(0);
+		};
+		//리뷰테이블에 등록
+		reviewRepo.save(review);
+		return "redirect:/user/prod_detail?pno="+pno;
 	}
 }

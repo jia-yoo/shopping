@@ -19,15 +19,15 @@
 			</div>
 		</div>
 		<th:block th:if="${session.id == null}">
-			<a href="/member/mem_regForm">회원가입하기</a>
-			<a href="/member/login">로그인하기</a>
+			<a href="/user/mem_regForm">회원가입하기</a>
+			<a href="/user/login">로그인하기</a>
 		</th:block>
 		<th:block th:if="${session.id != null}">
 			<span>[[${session.id}]] 님 어서오세요 😉<span>
 			<a href="/member/logout">로그아웃하기</a>
 			<a href="/member/myPage">마이페이지</a>
 		</th:block>
-		<a href="/admin/admin_main">관리자페이지로가기</a>
+		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
 	</nav>
 </header>
 <main>
@@ -70,8 +70,13 @@
 		<button id="goToOrderBtn" onclick=''>주문하기</button>
 	</div>
 	<div class="review">
-		<ul th:if="${review != null}" th:each="review : ${review}">
-			<li></li>
+	<div>
+		<input id="content" style="width:300px;" type="text" name="content" placeholder="리뷰를 남겨보세요 b(￣▽￣)d">
+		<input onclick="regReview(event)" type="submit" value="리뷰등록하기">
+	</div>
+	<h3>리뷰 읽기</h3>
+		<ul id="reviewContainer" th:if="${review != null}" th:each="review : ${review}">
+			<li>[[${review.content}]] <span>[[${review.member.userName}]]</span> <span th:if="${review.actualPurchase == 1}">   ✅  </span></li>
 		</ul>
 	</div>
 </main>
@@ -83,6 +88,7 @@ const orderQuanEl = document.querySelector("#orderQuan");
 const addToCartBtn = document.querySelector("#addToCartBtn");
 const goToOrderBtn = document.querySelector("#goToOrderBtn");
 const orderContainer = document.querySelector(".orderContainer");
+const reviewContainer = document.querySelector("#reviewContainer");
 const pno = [[${prod.pno}]];
 const status = [[${prod.status}]];
 const cartQuanEl = document.querySelector("#cartQuan");
@@ -141,6 +147,11 @@ addToCartBtn.addEventListener("click", function(){
 	  xhttp.send();
 	
 })
+
+function regReview(){
+	const content = document.querySelector("#content");
+	location.href="/member/reg_review?pno="+pno+"&&content="+content.value;
+}
 
 </script>
 </body>

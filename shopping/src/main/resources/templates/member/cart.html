@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
 img{
 	width:100px;
@@ -27,15 +28,15 @@ input{
 			</div>
 		</div>
 		<th:block th:if="${session.id == null}">
-			<a href="/member/mem_regForm">회원가입하기</a>
-			<a href="/member/login">로그인하기</a>
+			<a href="/user/mem_regForm">회원가입하기</a>
+			<a href="/user/login">로그인하기</a>
 		</th:block>
 		<th:block th:if="${session.id != null}">
 			<span>[[${session.id}]] 님 어서오세요 😉<span>
 			<a href="/member/logout">로그아웃하기</a>
 			<a href="/member/myPage">마이페이지</a>
 		</th:block>
-		<a href="/admin/admin_main">관리자페이지로가기</a>
+		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
 	</nav>
 </header>
 <main>
@@ -62,8 +63,12 @@ input{
 				</td>
 				<td>[[${cartList.product.pPrice}]]</td>
 				<td ><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
-				<td th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
+				<td class="itemTotalPrice" th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
 				<td class="deleteBtns">❌</td>
+			</tr>
+			<tr>
+				<th>TOTAL : </th>
+				<td id="total"> </td>
 			</tr>
 		</table>
 		<button onclick="goToOrder()">주문하기</button>
@@ -77,6 +82,8 @@ const checkAll = document.querySelector("#checkAll");
 const deleteBtns = document.querySelectorAll(".deleteBtns");
 const checkBoxes = document.querySelectorAll(".checkBox");
 const changeQuanBtns = document.querySelectorAll(".changeQuanBtn");
+const itemTotalPrices = document.querySelectorAll(".itemTotalPrice");
+let sum=0;
 
 //수량 변경하기
 changeQuanBtns.forEach(btn=>{
@@ -163,7 +170,7 @@ function goToOrder(){
 
     checkBoxes.forEach(box => {
         if (box.checked) {
-            const pno = box.dataset.pno;
+            const pno = box.parentElement.parentElement.querySelector("#pno").value;
             const quan = box.parentElement.parentElement.querySelector(".orderQuan").textContent;
             selectedItems.push({ pno: pno, quan: quan });
         }
@@ -180,20 +187,31 @@ function goToOrder(){
     })
     .then(response => {
         if (response.ok) {
-            return response.json();
+            return response.text();
         }
         throw new Error("Network response was not ok.");
     })
     .then(data => {
         console.log(data);
-        // 성공적으로 주문이 완료되었을 때 추가 작업을 여기에 작성
-//         location.href = "/member/orderConfirmation";
+        // 성공적으로 주문이 완료되었을 때
+        if(data == true){
+        	alert("주문이 성공적으로 완료되었습니다. 메인화면으로 이동합니다.");
+         location.href = "/";
+        }else{
+        	alert("주문하려는 상품의 수량이 재고보다 많습니다. 다시 시도해주세요");
+        }
     })
     .catch(error => {
         console.error("There was a problem with the fetch operation:", error);
     });
 }
 
+
+itemTotalPrices.forEach(prices=>{
+	 let price = Number(prices.innerText);
+	 sum += price;
+	 document.querySelector("#total").innerHTML = sum + " 원";
+})
 </script>
 
 </body>

@@ -7,14 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.shopping.entity.Product;
-import com.example.shopping.entity.Sales;
+import com.example.shopping.entity.Review;
 import com.example.shopping.repository.ProductRepository;
-import com.example.shopping.repository.SalesRepository;
-
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.shopping.repository.ReviewRepository;
 
 @Controller
 @RequestMapping("/user")
@@ -22,6 +19,8 @@ public class UserController {
 
 	@Autowired
 	private ProductRepository prodRepo;
+	@Autowired
+	private ReviewRepository reviewRepo;
 	
 	
 	@RequestMapping("/shop")
@@ -33,7 +32,17 @@ public class UserController {
 	@RequestMapping("/prod_detail")
 	private void userProdDetail(@RequestParam("pno") Long pno, Model model) {
 		Product prod = prodRepo.findById(pno).get();
+		List<Review> reviewList = reviewRepo.findAll();
 		model.addAttribute("prod", prod);
+		model.addAttribute("review", reviewList);
+	}
+	
+	@RequestMapping("/login")
+	private void login() {
+	}
+	
+	@RequestMapping("/mem_regForm")
+	private void memRegForm() {
 	}
 
 }
