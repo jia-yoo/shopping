@@ -5,77 +5,68 @@
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
-img{
-	width:100px;
-	height:100px;
-}
-ul{
+
+#img{
     width: 240px; height: 240px;
-    border: 1px solid #e4e4e4;
+    border: 2px solid #EDEDE6;
     border-radius: 10px;
-    background-color: #fff;
     float: left;
     margin: 45px;
-    font: 900 18px/1 'Pretendard-Regular';
-    text-align: center;
+    background-size: 100% 100%;
+}
+.itemContainer{
+	display:flex;
+	justify-content:center;
+	margin-top:20px;
+}
+.title{
+	color: #335E3B;
+	font-size:larger;
+	font-weight:bolder;
+}
+a, a:visited{
+	display:block;
+	font-size:larger;
+	color: #335E3B;
+	text-decoration:none;
+	padding:10px;
+	margin:10px;
+	
 }
 </style>
 </head>
 <body>
-<header>
-	<nav>
-		<a href="/"><img id="logo" style="width:50px; height:50px;" src="/img/logo.jpg"></a>
-		<a href="/user/shop">shop</a>
-		<div class="cart-wrap" onclick="location.href='/member/cart'">
-			<div class="cart-image">
-				<img style="width:50px; height:50px;" src="/img/shopping_cart.png">
-			</div>
-			<div  class="cart-text">
-				<span>0</span>
-			</div>
-		</div>
-		<th:block th:if="${session.id == null}">
-			<a href="/user/mem_regForm">회원가입하기</a>
-			<a href="/user/login">로그인하기</a>
-		</th:block>
-		<th:block th:if="${session.id != null}">
-			<span>[[${session.id}]] 님 어서오세요 😉<span>
-			<a href="/member/logout">로그아웃하기</a>
-			<a href="/member/myPage">마이페이지</a>
-		</th:block>
-		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
-	</nav>
-</header>
+<div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
-	<div class="mostSoldItems">
-		<h3>인기 상품 </h3>
+	<div class="itemContainer mostSoldItems">
+		<h3 class="title">인기 상품 </h3>
 		<ul th:each="mostSoldList : ${mostSoldList}">
 			<li class="pno" style="display:none;">[[${mostSoldList.pno}]]</li>
-			<li><img th:src="@{|/images/user/${mostSoldList.fileName}|}"></li>
-			<li><a th:href="@{/user/prod_detail(pno=${mostSoldList.pno})}">[[${mostSoldList.pName}]]</a></li>	
-			<li>[[${mostSoldList.pPrice}]]</li>	
+			<li id="img" th:style="'background-image: url(/images/user/' + ${mostSoldList.fileName} + ');'">
+			<li><a id="pname" th:href="@{/user/prod_detail(pno=${mostSoldList.pno})}">[[${mostSoldList.pName}]]</a></li>	
+			<li>₩[[${mostSoldList.pPrice}]]</li>	
 			<li th:if="${mostSoldList.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
-	<div class="newestItems">
-	<h3>신상품 </h3>
+	<div class="itemContainer newestItems">
+	<h3 class="title">신상품 </h3>
 		<ul th:each="prodList : ${prodList}">
 			<li class="pno" style="display:none;">[[${prodList.pno}]]</li>
-			<li><img th:src="@{|/images/user/${prodList.fileName}|}"></li>
+			<li id="img" th:style="'background-image: url(/images/user/' + ${prodList.fileName} + ');'">
 			<li><a th:href="@{/user/prod_detail(pno=${prodList.pno})}">[[${prodList.pName}]]</a></li>	
-			<li>[[${prodList.pPrice}]]</li>	
+			<li>₩[[${prodList.pPrice}]]</li>	
 			<li th:if="${prodList.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
 
 </main>
 <script th:inline="javascript">
-const items = document.querySelectorAll("li img");
+const items = document.querySelectorAll("#img");
 
 items.forEach(item=>{
 	item.addEventListener("click", function(e){
 		console.log(e.target)
-		const pno = e.target.parentElement.parentElement.querySelector(".pno").innerText;
+		const pno = e.target.parentElement.querySelector(".pno").innerText;
 		location.href="/user/prod_detail?pno="+pno;
 		
 	})

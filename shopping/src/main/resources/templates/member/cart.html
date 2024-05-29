@@ -9,39 +9,38 @@ img{
 	width:100px;
 	height:100px;
 }
+.title{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
+	margin:100px auto;
+}
+.container{
+	width:1800px;
+	display:flex;
+	justify-content:center;
+	margin:20px auto;
+}
+table th {
+	border-bottom:1px solid #335E3B; 
+	padding:30px;
+	color: #335E3B;
+}
+
+td {
+	border-bottom:1px solid #335E3B; 
+	width:500px;
+}
 input{
-	width:10px;
+	width:30px;
 }
 </style>
 </head>
 <body>
-<header>
-	<nav>
-		<a href="/"><img id="logo" style="width:50px; height:50px;" src="/img/logo.jpg"></a>
-		<a href="/user/shop">shop</a>
-		<div class="cart-wrap" onclick="location.href='/member/cart'">
-			<div class="cart-image">
-				<img style="width:50px; height:50px;" src="/img/shopping_cart.png">
-			</div>
-			<div  class="cart-text">
-				<span>0</span>
-			</div>
-		</div>
-		<th:block th:if="${session.id == null}">
-			<a href="/user/mem_regForm">회원가입하기</a>
-			<a href="/user/login">로그인하기</a>
-		</th:block>
-		<th:block th:if="${session.id != null}">
-			<span>[[${session.id}]] 님 어서오세요 😉<span>
-			<a href="/member/logout">로그아웃하기</a>
-			<a href="/member/myPage">마이페이지</a>
-		</th:block>
-		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
-	</nav>
-</header>
+<div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
 	<h1>cart 화면</h1>
-		<table>
+		<table class="container">
 			<tr>
 				<th>check All <input id="checkAll" type="checkbox"></th>
 				<th>상품 사진</th>
@@ -62,13 +61,13 @@ input{
 					<button class="changeQuanBtn">수량변경</button>
 				</td>
 				<td>[[${cartList.product.pPrice}]]</td>
-				<td ><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
+				<td style="display:none;"><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
 				<td class="itemTotalPrice" th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
 				<td class="deleteBtns">❌</td>
 			</tr>
 			<tr>
-				<th>TOTAL : </th>
-				<td id="total"> </td>
+				<th class="title" colspan='4'>TOTAL   : </th>
+				<td class="title" colspan='3' id="total"> </td>
 			</tr>
 		</table>
 		<button onclick="goToOrder()">주문하기</button>

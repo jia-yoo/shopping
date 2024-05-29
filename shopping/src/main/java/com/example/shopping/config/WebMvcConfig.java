@@ -37,7 +37,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         
         registry.addInterceptor(memberInterceptor)
         .addPathPatterns("/member/**") // 인터셉터를 적용할 URL 패턴
-        .excludePathPatterns("/exclude-path"); // 제외할 URL 패턴
+        .excludePathPatterns("/member/mem_login") // 제외할 URL 패턴
+        .excludePathPatterns("/member/mem_regist"); // 제외할 URL 패턴
     }
     
 }

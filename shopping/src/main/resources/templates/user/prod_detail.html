@@ -4,80 +4,104 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
+<style>
+img{
+	width:500px;
+	height:500px;
+	margin-right:100px;
+}
+.title{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
+	margin:100px auto;
+}
+.container{
+	width:1800px;
+	display:flex;
+	justify-content:center;
+	margin:20px auto;
+}
+table th, td {
+	border-bottom:1px solid #335E3B; 
+	margin-right: 10px;
+}
+input{
+	padding:10px;
+	width:500px;
+}
+.review_write{
+	margin:80px auto;
+}
+
+#reviewContainer{
+	width:1000px;
+	border-bottom:1px solid #335E3B;
+	margin:10px auto;
+}
+#reviewContainer li{
+	display:flex;
+	padding:10px;
+	justify-content: space-between;
+}
+.review{
+margin-bottom:300px;
+}
+</style>
 </head>
 <body>
-<header>
-	<nav>
-		<a href="/"><img id="logo" style="width:50px; height:50px;" src="/img/logo.jpg"></a>
-		<a href="/user/shop">shop</a>
-		<div class="cart-wrap" onclick="location.href='/member/cart'">
-			<div class="cart-image">
-				<img style="width:50px; height:50px;" src="/img/shopping_cart.png">
-			</div>
-			<div  class="cart-text">
-				<span>0</span>
-			</div>
-		</div>
-		<th:block th:if="${session.id == null}">
-			<a href="/user/mem_regForm">회원가입하기</a>
-			<a href="/user/login">로그인하기</a>
-		</th:block>
-		<th:block th:if="${session.id != null}">
-			<span>[[${session.id}]] 님 어서오세요 😉<span>
-			<a href="/member/logout">로그아웃하기</a>
-			<a href="/member/myPage">마이페이지</a>
-		</th:block>
-		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
-	</nav>
-</header>
+<div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
-	<h1>상품상세페이지 유저</h1>
-	<table>
-	    <tr>
-		    <td colspan="2" th:if="${prod.fileName != null}">
-				<img th:src="@{|/images/user/${prod.fileName}|}">
+	<h1 class="title">상품 상세 페이지</h1>
+	<div class="container">
+		<img th:src="@{|/images/user/${prod.fileName}|}">
+		<table>
+			<tr>
+				<th>상품명</th>
+				<td>[[${prod.pName}]]</td>
+			</tr>
+			<tr>
+				<th>상품 가격</th>
+				<td>[[${prod.pPrice}]]</td>
+			</tr>
+			<tr>
+				<th>현 재고수량</th>
+				<td>[[${prod.pQuan}]]</td>
+			</tr>
+			<tr>
+				<th>상태 (판매/품절)</th>
+				<td th:if="${prod.status == 'onStock'}">판매중</td>
+				<td th:if="${prod.status == 'soldout'}">일시품절</td>
+			</tr>
+			<tr>
+				<th>상품 상세 설명</th>
+				<td>[[${prod.description}]]</td>
+			</tr>
+			<tr>
+			 <td colspan='2'>수량 : <span id="dec">◀</span><span id="orderQuan">1</span><span id="inc">▶</span></td>
+			</tr>
+			<tr>
+			 <td colspan='2'>
+				<div class="orderContainer">
+				<button id="addToCartBtn" onclick=''>장바구니에 담기</button>
+				<button id="goToOrderBtn" onclick=''>주문하기</button>
+			</div>
 			</td>
-			 <td colspan="2" th:if="${prod.fileName == null}">
-				이미지 없음
-			</td>
-		</tr>
-		<tr>
-			<th>상품명</th>
-			<td>[[${prod.pName}]]</td>
-		</tr>
-		<tr>
-			<th>상품 가격</th>
-			<td>[[${prod.pPrice}]]</td>
-		</tr>
-		<tr>
-			<th>현 재고수량</th>
-			<td>[[${prod.pQuan}]]</td>
-		</tr>
-		<tr>
-			<th>상태 (판매/품절)</th>
-			<td th:if="${prod.status == 'onStock'}">판매중</td>
-			<td th:if="${prod.status == 'soldout'}">일시품절</td>
-		</tr>
-		<tr>
-			<th>상품 상세 설명</th>
-			<td>[[${prod.description}]]</td>
-		</tr>
-	</table>
+			</tr>
+			
+		</table>
+	</div>	
 	
-	<span id="dec">◀</span><span id="orderQuan">1</span><span id="inc">▶</span>
-	<div class="orderContainer">
-		<button id="addToCartBtn" onclick=''>장바구니에 담기</button>
-		<button id="goToOrderBtn" onclick=''>주문하기</button>
-	</div>
 	<div class="review">
-	<div>
-		<input id="content" style="width:300px;" type="text" name="content" placeholder="리뷰를 남겨보세요 b(￣▽￣)d">
-		<input onclick="regReview(event)" type="submit" value="리뷰등록하기">
+	<div class="review_write">
+		<input id="content" type="text" name="content" placeholder="리뷰를 남겨보세요 b(￣▽￣)d">
+		<button onclick="regReview(event)"> 리뷰등록하기 </button>
 	</div>
-	<h3>리뷰 읽기</h3>
+	<div class="review_list">
 		<ul id="reviewContainer" th:if="${review != null}" th:each="review : ${review}">
-			<li>[[${review.content}]] <span>[[${review.member.userName}]]</span> <span th:if="${review.actualPurchase == 1}">   ✅  </span></li>
+			<li><span>[[${review.content}]]</span> <span class="writer">[[${review.member.userName}]] <span th:if="${review.actualPurchase == 1}">  ✅</span></span> </li>
 		</ul>
+	</div>
 	</div>
 </main>
 <script th:inline="javascript">

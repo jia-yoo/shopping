@@ -46,7 +46,7 @@ public class MemberController {
 	private String memRegist(Member member) {
 		member.setRole("ROLE_MEMBER");		
 		memberRepo.save(member);
-		return "redirect:/member/login";
+		return "redirect:/user/login";
 	}
 	
 	@RequestMapping("/mem_login")
@@ -58,10 +58,10 @@ public class MemberController {
 				return "redirect:/";
 			}
 			model.addAttribute("result", "wrongPw");
-			return "redirect:/member/login";
+			return "redirect:/user/login";
 		}
 		model.addAttribute("result", "noId");
-		return "redirect:/member/login";
+		return "redirect:/user/login";
 	}
 
 	@RequestMapping("/logout")

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div th:fragment="fragment-nav">
+<header>
+	<nav>
+		<a href="/"><img id="logo" src="/img/logo.jpg"></a>
+		<div class="menuContainer">
+			<a href="/user/shop">shop</a>
+			<th:block th:if="${session.id == null}">
+				<a href="/user/mem_regForm">회원가입하기</a>
+				<a href="/user/login">로그인하기</a>
+			</th:block>
+			<th:block th:if="${session.id != null}">
+				<span>[[${session.id}]] 님 어서오세요 😉</span>
+				<a href="/member/logout">로그아웃하기</a>
+				<a href="/member/myPage">마이페이지</a>
+				<div class="cart-wrap" onclick="location.href='/member/cart'">
+					<div class="cart-image">
+						<img src="/img/shopping_cart.png">
+					</div>
+					<div  class="cart-text">
+						<span></span>
+				</div>
+			</div>
+			</th:block>
+			<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
+		</div>
+	</nav>
+</header>
+</div>
+</body>
+</html>

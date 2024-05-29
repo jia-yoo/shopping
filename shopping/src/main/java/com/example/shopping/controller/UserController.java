@@ -32,7 +32,7 @@ public class UserController {
 	@RequestMapping("/prod_detail")
 	private void userProdDetail(@RequestParam("pno") Long pno, Model model) {
 		Product prod = prodRepo.findById(pno).get();
-		List<Review> reviewList = reviewRepo.findAll();
+		List<Review> reviewList = reviewRepo.findAllByPno(pno);
 		model.addAttribute("prod", prod);
 		model.addAttribute("review", reviewList);
 	}

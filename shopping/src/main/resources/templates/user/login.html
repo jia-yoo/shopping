@@ -4,36 +4,43 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
+<style>
+.title{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
+	margin:100px auto;
+}
+form{
+	width:1800px;
+	margin:20px auto;
+}
+input[type="text"],input[type="password"]{
+	width:40%;
+	padding:10px;
+	margin-bottom:10px;
+}
+input[type="submit"]{
+	width:41.3%;
+    padding:10px;
+	background-color:#EDEDE6;
+	color: #335E3B;
+}
+input[type="submit"]:hover{
+	width:41.3%;
+    padding:10px;
+	background-color:#335E3B;
+	color: #EDEDE6;
+}
+</style>
 </head>
 <body>
-<header>
-	<nav>
-		<a href="/"><img id="logo" style="width:50px; height:50px;" src="/img/logo.jpg"></a>
-		<a href="/user/shop">shop</a>
-		<div class="cart-wrap" onclick="location.href='/member/cart'">
-			<div class="cart-image">
-				<img style="width:50px; height:50px;" src="/img/shopping_cart.png">
-			</div>
-			<div  class="cart-text">
-				<span>0</span>
-			</div>
-		</div>
-		<th:block th:if="${session.id == null}">
-			<a href="/user/mem_regForm">회원가입하기</a>
-			<a href="/user/login">로그인하기</a>
-		</th:block>
-		<th:block th:if="${session.id != null}">
-			<span>[[${session.id}]] 님 어서오세요 😉<span>
-			<a href="/member/logout">로그아웃하기</a>
-			<a href="/member/myPage">마이페이지</a>
-		</th:block>
-		<a th:if="${session.id == 'admin'}" href="/admin/admin_main">관리자페이지로가기</a>
-	</nav>
-</header>
+<div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
+<h1 class="title">로그인</h1>
 	<form action="/member/mem_login" method="post">
-		<input type="text" name="userName" placeholder="아이디*">
-		<input type="password" name="pw" placeholder="비밀번호*">
+		<input type="text" name="userName" placeholder="아이디*"> <br>
+		<input type="password" name="pw" placeholder="비밀번호*"> <br>
 		<input type="submit" value="제출">
 	</form>
 </main>	
