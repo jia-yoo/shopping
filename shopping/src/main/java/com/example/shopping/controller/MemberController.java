@@ -2,6 +2,7 @@ package com.example.shopping.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import com.example.shopping.repository.MemberRepository;
 import com.example.shopping.repository.ProductRepository;
 import com.example.shopping.repository.ReviewRepository;
 import com.example.shopping.repository.SalesRepository;
+import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -63,6 +65,18 @@ public class MemberController {
 		model.addAttribute("result", "noId");
 		return "redirect:/user/login";
 	}
+	@RequestMapping("/member_editForm")
+	private void memEditForm(HttpServletRequest request, Model model) {
+		String userName = (String) request.getSession().getAttribute("id");
+		Member member = memberRepo.findByUserName(userName).get();
+		model.addAttribute("member", member);
+	}
+	@RequestMapping("/member_update")
+	private String memUpdate(Member member, @RequestParam("mno") Long mno) {
+		member.setMno(mno);
+		memberRepo.save(member);
+		return "redirect:/member/myPage";
+	}
 
 	@RequestMapping("/logout")
 	private String logout(HttpServletRequest request) {
@@ -73,26 +87,37 @@ public class MemberController {
 	@RequestMapping("/prod_order")
 	private @ResponseBody String memProdOrder(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("sQuan") int sQuan,Model model) {
 		String userName = (String) request.getSession().getAttribute("id");
-		Sales sale = new Sales();
-		sale.setMember(memberRepo.findByUserName(userName).get());
-		sale.setSQuan(sQuan);
-		sale.setProduct(productRepo.findById(pno).get());
-		
-		//날짜+아이디로 유일한 주문번호 생성
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-    	String dateString = formatter.format(new Date());
-		sale.setOrderNo(dateString + userName);
-		
-		//sales 테이블에 더해주기
-		salesRepo.save(sale);
-	
-		//product테이블에서 pQuan 줄여주기
+		  //product테이블에서 pQuan이 주문하려는 quan보다 많은지 check
 		Product prod = productRepo.findById(pno).get();
 		int pQuan = prod.getPQuan();
-		int newQuan = pQuan-sQuan;
-		prod.setPQuan(newQuan);
-		productRepo.save(prod);
-		return "true";
+		if(pQuan >= sQuan) {
+			Sales sale = new Sales();
+			sale.setMember(memberRepo.findByUserName(userName).get());
+			sale.setSQuan(sQuan);
+			sale.setProduct(productRepo.findById(pno).get());
+			
+			//날짜+아이디로 유일한 주문번호 생성
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	    	String dateString = formatter.format(new Date());
+			sale.setOrderNo(dateString + userName);
+			
+			//sales 테이블에 더해주기
+			salesRepo.save(sale);
+		
+			//product테이블에서 pQuan 줄여주기
+			int newQuan = pQuan-sQuan;
+			prod.setPQuan(newQuan);
+			productRepo.save(prod);
+			if(newQuan == 0) {
+				prod.setStatus("soldout");
+			}
+			return "true";
+		}else {
+			System.out.println("수량부족스");
+			String quantity = Integer.toString(prod.getPQuan());
+			System.out.println(quantity);
+			return quantity;
+		}
 	}
 	@RequestMapping("/prod_orderFromCart")
 	private @ResponseBody String prodOrderFromCart(HttpServletRequest request, @RequestBody List<Map<String, Object>> orderItems) {
@@ -120,21 +145,25 @@ public class MemberController {
 	 	    		int newQuan = pQuan-quan;
 	 	    		prod.setPQuan(newQuan);
 	 	    		productRepo.save(prod);
-	 	    		
+	 	    		if(newQuan == 0) {
+	 					prod.setStatus("soldout");
+	 				}
 	 	    		//장바구니 내에 주문된 아이템 지워주기
 	 	    		cartRepo.deleteByMnoAndPno(mno, pno);
 	 	    		return "true";
 	    		}else {
-//	    			System.out.println("수량부족스");
-//	    			String pname = prod.getPName();
-//	    			Map<String,String> lessItem = new HashMap<>();
-//	    			lessItem.put("pname", pname);
-//	    			 // Gson 객체 생성
-//	    	        Gson gson = new Gson();
-//	    	        // Map을 JSON 문자열로 변환
-//	    	        String json = gson.toJson(lessItem);
-//	    	        System.out.println(json);
-	    			return "false";
+	    			System.out.println("수량부족스");
+	    			String pname = prod.getPName();
+	    			String quantity = Integer.toString(prod.getPQuan());
+	    			Map<String,String> lessItem = new HashMap<>();
+	    			lessItem.put("pname", pname);
+	    			lessItem.put("quantity", quantity);
+	    			 // Gson 객체 생성
+	    	        Gson gson = new Gson();
+	    	        // Map을 JSON 문자열로 변환
+	    	        String json = gson.toJson(lessItem);
+	    	        System.out.println(json);
+	    			return json;
 	    		}
 	        }
 		return "false";

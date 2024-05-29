@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
+<style>
+.title{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
+	margin:100px auto;
+}
+form{
+	width:1800px;
+	margin:20px auto;
+}
+input[type="text"],input[type="password"]{
+	width:40%;
+	padding:10px;
+	margin-bottom:10px;
+}
+input[type="submit"]{
+	width:41.3%;
+    padding:10px;
+	background-color:#EDEDE6;
+	color: #335E3B;
+}
+input[type="submit"]:hover{
+	width:41.3%;
+    padding:10px;
+	background-color:#335E3B;
+	color: #EDEDE6;
+}
+</style>
+</head>
+
+<body>
+<div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
+<main>
+<h1 class="title">회원가입</h1>
+	<form th:action="@{/member/member_update(mno=${member.mno})}" method="post">
+		<input type="text" name="userName" th:value="${member.userName}" readonly> <br>
+		<input type="password" name="pw" placeholder="비밀번호*">  <br>
+		<input type="password" name="pw2" placeholder="비밀번호확인*">  <br>
+		<input type="text" name="name" th:value="${member.name}">  <br>
+		<input type="text" name="addr" th:value="${member.addr}">  <br>
+		<input type="text" name="tel" th:value="${member.tel}">  <br>
+		<input type="text" name="role" th:value="${member.role}">  <br>
+		<input type="submit" value="제출">
+	</form>
+</main>
+</body>
+</html>

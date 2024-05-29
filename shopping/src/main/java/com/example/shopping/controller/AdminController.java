@@ -115,7 +115,11 @@ public class AdminController {
 
 	            
 	            }
-	            // User 엔티티 저장
+	           //재입고시 상태변환
+	            if(product.getPQuan() > 0) {
+	            	product.setStatus("onStock");
+	            }
+	            // product 엔티티 저장
                 productRepo.save(product);
 	        } catch (IOException e) {
 	            throw new RuntimeException("파일을 업로드 할 수 없습니다!", e);

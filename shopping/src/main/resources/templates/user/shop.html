@@ -47,9 +47,8 @@ a, a:visited{
 		<ul th:each="list : ${list}">
 			<li class="pno" style="display:none;">[[${list.pno}]]</li>
 			<li id="img" th:style="'background-image: url(/images/user/' + ${list.fileName} + ');'">
-			<li><a th:href="@{/user/prod_detail(pno=${list.pno})}">[[${list.pName}]]</a></li>	
-			<li>₩[[${list.pPrice}]]</li>	
-			<li th:if="${list.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
+			<li><a th:href="@{/user/prod_detail(pno=${list.pno})}">[[${list.pName}]]<img th:if="${list.status =='soldout'}" style="width:30px; height:30px;" src="/img/free-icon-out-of-stock-5578624.png"></a></li>	
+			<li>₩[[${list.pPrice}]] </li>	
 		</ul>
 	</div>
 </main>

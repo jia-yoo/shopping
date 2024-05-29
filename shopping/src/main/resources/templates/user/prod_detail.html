@@ -134,16 +134,31 @@ incBtn.addEventListener("click", function(e){
 goToOrderBtn.addEventListener("click", function(){
 	if(confirm("정말로 주문하시겠습니까?")){
 		let orderQuan = Number(orderQuanEl.innerText);
-		 const xhttp = new XMLHttpRequest();
-		  xhttp.onload = function() {
-		    if(this.responseText == "true"){
-		    	alert("주문이 성공적으로 완료되었습니다.");
-		    }else{
-		    	alert("주문에 실패하였습니다. 다시 시도해주세요😥");
-		    }
-		    }
-		  xhttp.open("post", "/member/prod_order?pno="+pno+"&&sQuan="+orderQuan, true);
-		  xhttp.send();
+			  
+		  fetch("/member/prod_order?pno="+pno+"&&sQuan="+orderQuan, {
+		        method: "POST",
+		        headers: {
+		            "Content-Type": "application/json"
+		        }
+		    })
+		    .then(response => {
+		        if (response.ok) {
+		            return response.json();
+		        }
+		        throw new Error("Network response was not ok.");
+		    })
+		    .then(data => {
+		        
+		        // 성공적으로 주문이 완료되었을 때
+		        if(data == true){
+		        	alert("주문이 성공적으로 완료되었습니다.");
+		        }else {
+		        	alert("주문하려는 상품의 수량이 재고수량( "+ data +" 개)보다 많습니다. 다시 시도해주세요");
+		        }
+		    })
+		    .catch(error => {
+		        console.error("There was a problem with the fetch operation:", error);
+		    });
 	}
 })
 
@@ -152,7 +167,7 @@ goToOrderBtn.addEventListener("click", function(){
 if(status == "soldout"){
 	goToOrderBtn.style.display="none";
 	addToCartBtn.style.display="none";
-	orderContainer.innerHTML="이 상품은 현재 일시 품절로, 주문이 불가합니다.";
+	orderContainer.innerHTML="<span style='color:red;'>이 상품은 현재 일시 품절로, 주문이 불가합니다.</span>";
 }
 
 
