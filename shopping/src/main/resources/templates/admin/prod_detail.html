@@ -3,18 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
+<style>
+*{
+	background-color:#EDEDE6;
+}
+img{
+	width:500px;
+	height:500px;
+}
+.title{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
+	margin:100px auto;
+}
+.container{
+	width:1800px;
+	display:flex;
+	justify-content:center;
+	margin:20px auto;
+}
+table th {
+	border-bottom:1px solid #335E3B; 
+	padding:30px;
+	color: #335E3B;
+}
+
+td {
+	border-bottom:1px solid #335E3B; 
+	width:500px;
+}
+a, a:visited{
+	padding:10px;
+	background-color:#EDEDE6;
+	color: #335E3B;
+}
+a:hover{
+	padding:10px;
+	background-color:#335E3B;
+	color: #EDEDE6;
+}
+</style>
 </head>
 <body>
-<h1>상품 상세조회</h1>
-<table>
-    <tr>
-	    <td colspan="2" th:if="${prod.fileName != null}">
-			<img th:src="@{|/images/user/${prod.fileName}|}">
-		</td>
-		 <td colspan="2" th:if="${prod.fileName == null}">
-			이미지 없음
-		</td>
-	</tr>
+<h1 class="title">상품 상세조회</h1>
+<img th:src="@{|/images/user/${prod.fileName}|}">
+<table class="container">
 	<tr>
 		<th>상품번호</th>
 		<td>[[${prod.pno}]]</td>
@@ -39,10 +74,13 @@
 		<th>상품 상세 설명</th>
 		<td>[[${prod.description}]]</td>
 	</tr>
+	<tr>
+		<td><a th:href="@{/admin/prod_edit(pno=${prod.pno})}">상품 수정하기</a></td>
+		<td><a th:href="@{/admin/prod_delete(pno=${prod.pno})}">상품 삭제하기</a></td>
+	</tr>
 </table>
 
-<a th:href="@{/admin/prod_edit(pno=${prod.pno})}">상품 수정하기</a>
-<a th:href="@{/admin/prod_delete(pno=${prod.pno})}">상품 삭제하기</a>
+
 
 </body>
 </html>
