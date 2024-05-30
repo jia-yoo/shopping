@@ -5,6 +5,7 @@
 	text-decoration:none;
 	font: 900 18px/1 'Pretendard-Regular';
 	text-align:center;
+	box-sizing:border-box;
 }
 nav{
 	display:flex;

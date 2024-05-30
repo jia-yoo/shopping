@@ -15,73 +15,98 @@ img{
 	font-weight:bolder;
 	margin:100px auto;
 }
-.container{
-	width:100%;
-	display:flex;
-	justify-content:center;
-	margin:20px auto;
+.total{
+	color: #335E3B;
+	font-size:xx-large;
+	font-weight:bolder;
 }
-.wrap{
+.container {
 	width:1800px;
-	display:flex;
 	justify-content:center;
 	margin:20px auto;
 	position:relative;
+	
 }
-table th {
+
+.category div {
+	display:flex;
 	border-bottom:1px solid #335E3B; 
 	padding:30px;
 	color: #335E3B;
+	width:15%;
+	align-items:center;
+	
+}
+.item, .category, .totalContainer{
+	width:100%;
+	display:flex;
+	align-items:center;
 }
 
-td {
+.item div{
+	display:flex;
 	border-bottom:1px solid #335E3B; 
-	width:500px;
+	padding:30px;
+	width:15%;
+	height:165px;
+	align-items:center;
+	
+}
+.totalContainer div{
+	display:flex;
+	border-bottom:1px solid #335E3B; 
+	padding:30px;
+	width:100%;
+	align-items:center;
 }
 input{
 	width:30px;
 }
-
+.overlay {
+   position: absolute;
+   width: 1800px;
+   height: 165px;
+   background-color: rgba(0, 0, 0, 0.5); /* 배경색 및 투명도 */
+   z-index: 99999; /* 다른 요소 위에 오도록 설정 */
+   pointer-events: all; /* 모든 포인터 이벤트를 활성화 */
+}
 </style>
 </head>
 <body>
 <div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
 	<h1 class="title">장바구니</h1>
-	<div class="wrap">
-		<table class="container">
-			<tr>
-				<th>check All <input id="checkAll" type="checkbox"></th>
-				<th>상품 사진</th>
-				<th>상품명</th>
-				<th>상품 수량</th>
-				<th>상품 가격</th>
-				<th>총 가격</th>
-				<th>삭제</th>
-			</tr>
-			<tr th:each="cartList : ${cartList}" class="item">
-				<td><input class="checkBox" type="checkbox"></td>
-				<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
-				<td>[[${cartList.product.pName}]]</td>
-				<td>
+		<div class="container">
+			<div class="category">
+				<div>check All <input id="checkAll" type="checkbox"></div>
+				<div>상품 사진</div>
+				<div>상품명</div>
+				<div>상품 수량</div>
+				<div>상품 가격</div>
+				<div>총 가격</div>
+				<div>삭제</div>
+			</div>
+			<div th:each="cartList : ${cartList}" class="item">
+				<div><input class="checkBox" type="checkbox"></div>
+				<div><img th:src="@{|/images/user/${cartList.product.fileName}|}"></div>
+				<div>[[${cartList.product.pName}]]</div>
+				<div>
 					<span style="display:none;" id="dec">◀</span>
 					<span class="orderQuan" th:text="${cartList.cQuan}">0</span>
 					<span style="display:none;" id="inc">▶</span>
 					<button class="changeQuanBtn">수량변경</button>
-				</td>
-				<td>[[${cartList.product.pPrice}]]</td>
-				<td style="display:none;"><input class="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
-				<td class="itemTotalPrice" th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
-				<td class="deleteBtns">❌</td>
-			</tr>			
-			
-			<tr>
-				<th class="title" colspan='4'>TOTAL   : </th>
-				<td class="title" colspan='3' id="total"> </td>
-			</tr>
-		</table>
-	</div>
+				</div>
+				<div>[[${cartList.product.pPrice}]]</div>
+				<div style="display:none;"><input class="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></div>
+				<div class="itemTotalPrice" th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></div>
+				<div class="deleteBtns">❌</div>
+			</div>	
+			<div class="totalContainer">
+				<div class="total" >TOTAL   :  &nbsp;&nbsp;<span class="total" id="total"> </span></div>
+			</div>
+		</div>
 		<button onclick=" return goToOrder()">주문하기</button>
+		
 </main>
 <script th:inline="javascript">
 
@@ -94,6 +119,7 @@ const changeQuanBtns = document.querySelectorAll(".changeQuanBtn");
 const itemTotalPrices = document.querySelectorAll(".itemTotalPrice");
 const soldoutList = [[${soldoutList}]]
 const pnos = document.querySelectorAll(".pno");
+
 let sum=0;
 
 
@@ -105,22 +131,20 @@ if(soldoutList != null){
 		const pno = soldoutList[i].product.pno;
 		const availQuan = soldoutList[i].product.pquan; 
 		
-		
-		
 		if(availQuan == 0){
 			console.log(pname + "은 재고가 0이어서 단한개도 주문 못하므로 무조건 탭 비활성화")
 			let soldoutItem;
 			pnos.forEach(prodNo=>{
 				if(Number(prodNo.value) == pno){
-					console.log("xxxxx")
-					console.log(prodNo)
-				
+					const target = prodNo.parentElement.parentElement;
+					const overlay = document.createElement('span');
+					overlay.classList.add('overlay');
+					target.appendChild(overlay);
 					
-				}else{
-					console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
 				}
 			})
-	
+	}else{
+		console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
 	}
 }
 }
