@@ -16,10 +16,17 @@ img{
 	margin:100px auto;
 }
 .container{
+	width:100%;
+	display:flex;
+	justify-content:center;
+	margin:20px auto;
+}
+.wrap{
 	width:1800px;
 	display:flex;
 	justify-content:center;
 	margin:20px auto;
+	position:relative;
 }
 table th {
 	border-bottom:1px solid #335E3B; 
@@ -34,14 +41,6 @@ td {
 input{
 	width:30px;
 }
-.overlay {
-	 
-     background-color: rgba(0, 0, 0, 0.5); /* 배경색 및 투명도 */
-     z-index: 1000; /* 다른 요소 위에 오도록 설정 */
-     pointer-events: all; /* 모든 포인터 이벤트를 활성화 */
-     width: 1797.5px; /* 오버레이의 너비 설정 */
-     height: 105px; /* 오버레이의 높이 설정 */
-}
 
 </style>
 </head>
@@ -49,6 +48,7 @@ input{
 <div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
 	<h1 class="title">장바구니</h1>
+	<div class="wrap">
 		<table class="container">
 			<tr>
 				<th>check All <input id="checkAll" type="checkbox"></th>
@@ -59,7 +59,7 @@ input{
 				<th>총 가격</th>
 				<th>삭제</th>
 			</tr>
-			<tr th:each="cartList : ${cartList}" class="item overlay">
+			<tr th:each="cartList : ${cartList}" class="item">
 				<td><input class="checkBox" type="checkbox"></td>
 				<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
 				<td>[[${cartList.product.pName}]]</td>
@@ -70,16 +70,17 @@ input{
 					<button class="changeQuanBtn">수량변경</button>
 				</td>
 				<td>[[${cartList.product.pPrice}]]</td>
-				<td style="display:none;"><input id="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
+				<td style="display:none;"><input class="pno" style="display:none;" type="text" name="pno" th:value="${cartList.product.pno}"></td>
 				<td class="itemTotalPrice" th:text="${#numbers.formatInteger(cartList.cQuan * cartList.product.pPrice, 0)}"></td>
 				<td class="deleteBtns">❌</td>
-			</tr>
-			<tr>
+			</tr>			
 			
+			<tr>
 				<th class="title" colspan='4'>TOTAL   : </th>
 				<td class="title" colspan='3' id="total"> </td>
 			</tr>
 		</table>
+	</div>
 		<button onclick=" return goToOrder()">주문하기</button>
 </main>
 <script th:inline="javascript">
@@ -92,6 +93,7 @@ const checkBoxes = document.querySelectorAll(".checkBox");
 const changeQuanBtns = document.querySelectorAll(".changeQuanBtn");
 const itemTotalPrices = document.querySelectorAll(".itemTotalPrice");
 const soldoutList = [[${soldoutList}]]
+const pnos = document.querySelectorAll(".pno");
 let sum=0;
 
 
@@ -103,17 +105,24 @@ if(soldoutList != null){
 		const pno = soldoutList[i].product.pno;
 		const availQuan = soldoutList[i].product.pquan; 
 		
+		
+		
 		if(availQuan == 0){
 			console.log(pname + "은 재고가 0이어서 단한개도 주문 못하므로 무조건 탭 비활성화")
-			if(document.querySelector("#pno").value == pno){
-				const soldoutItem = document.querySelector("#pno").parentElement.parentElement;
-				soldoutItem.classList.add("overlay");
-			}
-			
-		}else{
-			console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
-		}
+			let soldoutItem;
+			pnos.forEach(prodNo=>{
+				if(Number(prodNo.value) == pno){
+					console.log("xxxxx")
+					console.log(prodNo)
+				
+					
+				}else{
+					console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
+				}
+			})
+	
 	}
+}
 }
 
 //수량 변경하기
