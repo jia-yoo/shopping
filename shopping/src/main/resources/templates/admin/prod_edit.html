@@ -52,7 +52,7 @@ input[type="submit"]:hover{
 	
 	<input type="radio" name="status" value="onStock" th:checked="${prod.status == 'onStock'}">판매
 	<input type="radio" name="status" value="soldout" th:checked="${prod.status == 'soldout'}">품절 <br>
-	<textarea placeholder="상품상세설명" th:value="${prod.description}"></textarea> <br>
+	<textarea placeholder="상품상세설명" name="description" th:value="${prod.description}"></textarea> <br>
 	<input type="submit" value="상품수정하기">
 </form>
 </body>

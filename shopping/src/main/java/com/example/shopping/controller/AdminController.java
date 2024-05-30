@@ -114,6 +114,10 @@ public class AdminController {
 	                product.setFileSize(file.getSize());
 
 	            
+	            }else {
+	            	product.setFileName(productRepo.findById(pno).get().getFileName());
+	            	product.setFilePath(productRepo.findById(pno).get().getFilePath());
+	            	product.setFileSize(productRepo.findById(pno).get().getFileSize());
 	            }
 	           //재입고시 상태변환
 	            if(product.getPQuan() > 0) {

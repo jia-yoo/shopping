@@ -1,6 +1,7 @@
 package com.example.shopping.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -174,7 +175,16 @@ public class MemberController {
 		Member member = memberRepo.findByUserName(userName).get();
 		Long mno = member.getMno();
 		List<Cart> cartList = cartRepo.findAllByMno(mno);
+		List<Cart> soldoutList = new ArrayList<>();
+		for(Cart c: cartList) {
+			Long pno = c.getProduct().getPno();
+			int quantity = productRepo.findById(pno).get().getPQuan();
+			if(quantity == 0 || quantity < c.getCQuan()) {
+				soldoutList.add(c);
+			}
+		}
 		model.addAttribute("cartList", cartList);
+		model.addAttribute("soldoutList", soldoutList);
 	}
 	@RequestMapping("/addToCart")
 	private  @ResponseBody String addToCart(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("sQuan") int sQuan, Model model) {

@@ -34,6 +34,15 @@ td {
 input{
 	width:30px;
 }
+.overlay {
+	 
+     background-color: rgba(0, 0, 0, 0.5); /* 배경색 및 투명도 */
+     z-index: 1000; /* 다른 요소 위에 오도록 설정 */
+     pointer-events: all; /* 모든 포인터 이벤트를 활성화 */
+     width: 1797.5px; /* 오버레이의 너비 설정 */
+     height: 105px; /* 오버레이의 높이 설정 */
+}
+
 </style>
 </head>
 <body>
@@ -50,7 +59,7 @@ input{
 				<th>총 가격</th>
 				<th>삭제</th>
 			</tr>
-			<tr th:each="cartList : ${cartList}">
+			<tr th:each="cartList : ${cartList}" class="item overlay">
 				<td><input class="checkBox" type="checkbox"></td>
 				<td><img th:src="@{|/images/user/${cartList.product.fileName}|}"></td>
 				<td>[[${cartList.product.pName}]]</td>
@@ -66,13 +75,13 @@ input{
 				<td class="deleteBtns">❌</td>
 			</tr>
 			<tr>
+			
 				<th class="title" colspan='4'>TOTAL   : </th>
 				<td class="title" colspan='3' id="total"> </td>
 			</tr>
 		</table>
 		<button onclick=" return goToOrder()">주문하기</button>
 </main>
-
 <script th:inline="javascript">
 
 
@@ -82,7 +91,30 @@ const deleteBtns = document.querySelectorAll(".deleteBtns");
 const checkBoxes = document.querySelectorAll(".checkBox");
 const changeQuanBtns = document.querySelectorAll(".changeQuanBtn");
 const itemTotalPrices = document.querySelectorAll(".itemTotalPrice");
+const soldoutList = [[${soldoutList}]]
 let sum=0;
+
+
+if(soldoutList != null){
+	console.log("주문못하는 상품 존재")
+	console.log(soldoutList);
+	for(i=0; i <soldoutList.length; i++){
+		const pname = soldoutList[i].product.pname;
+		const pno = soldoutList[i].product.pno;
+		const availQuan = soldoutList[i].product.pquan; 
+		
+		if(availQuan == 0){
+			console.log(pname + "은 재고가 0이어서 단한개도 주문 못하므로 무조건 탭 비활성화")
+			if(document.querySelector("#pno").value == pno){
+				const soldoutItem = document.querySelector("#pno").parentElement.parentElement;
+				soldoutItem.classList.add("overlay");
+			}
+			
+		}else{
+			console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
+		}
+	}
+}
 
 //수량 변경하기
 changeQuanBtns.forEach(btn=>{
