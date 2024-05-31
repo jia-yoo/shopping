@@ -264,4 +264,22 @@ public class MemberController {
 		reviewRepo.save(review);
 		return "redirect:/user/prod_detail?pno="+pno;
 	}
+	
+	@RequestMapping("/editReview")
+	private String editReview(@RequestParam("rno") Long rno, @RequestParam("content") String content,  @RequestParam("rating") int rating ) {
+		Long pno = reviewRepo.findById(rno).get().getProduct().getPno();
+		Review review = reviewRepo.findById(rno).get();
+		review.setContent(content);
+		review.setRating(rating);
+		reviewRepo.save(review);
+		return "redirect:/user/prod_detail?pno="+pno;
+	}
+	@RequestMapping("/deleteReview")
+	private String deleteReview(@RequestParam("rno") Long rno) {
+		Long pno = reviewRepo.findById(rno).get().getProduct().getPno();
+		Review review = reviewRepo.findById(rno).get();
+		reviewRepo.deleteById(rno);
+		return "redirect:/user/prod_detail?pno="+pno;
+	}
+	
 }

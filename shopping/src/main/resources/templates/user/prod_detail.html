@@ -51,7 +51,7 @@ input{
 #inc, #dec{
 	padding:3px;
 }
-.star{
+.star, .editstar{
 	width:40px;
 	height:40px;
 	margin:0;
@@ -71,6 +71,9 @@ input{
 .avgRating{
 	display:flex;
 	justify-content: center;
+}
+.review_edit{
+	margin:0 auto;
 }
 </style>
 </head>
@@ -104,8 +107,8 @@ input{
 			<tr>
 			 <td colspan='2'>
 				<div class="orderContainer">
-				<button id="addToCartBtn" onclick=''>장바구니에 담기</button>
-				<button id="goToOrderBtn" onclick=''>주문하기</button>
+				<button id="addToCartBtn">장바구니에 담기</button>
+				<button id="goToOrderBtn">주문하기</button>
 			</div>
 			</td>
 			</tr>
@@ -114,9 +117,9 @@ input{
 	
 	<div class="review">
 	<h1 class="title">상품 리뷰</h1>
-	<div class="avgRating">
+	<div class="avgRating" th:if="${avg != null}">
 		<img style="width:100px; height:100px; margin:0;" th:src="@{/img/avg_star.png}">
-		<div><div style="font-size:x-large; color: #335E3B; margin-top:5px;">평균 별점</div> <div style="font-size:50px; margin-top:10px; color: #335E3B;">[[${avg}]]</div></div>
+		<div><div style="font-size:x-large; color: #335E3B; margin-top:5px;">평균 별점</div> <div style="font-size:50px; margin-top:10px; color: #335E3B;" th:text="${avg}"></div></div>
 	</div>
 	<div class="review_write">
 		<img class="star" id="star1" th:src="@{/img/star.png}">
@@ -129,7 +132,14 @@ input{
 	</div>
 	<div class="review_list">
 		<ul id="reviewContainer" th:if="${review != null}" th:each="review : ${review}">
-			<li><span class="reviews"><img class="starView" th:each="star : ${#numbers.sequence(1, review.rating)}"  th:src="@{/img/star_full.png}"><span style="margin-left:20px;">[[${review.content}]]</span></span><span class="writer">[[${review.member.userName}]] <span th:if="${review.actualPurchase == 1}">  ✅</span></span> </li>
+			<li>
+				<span class="reviews">
+					<img class="starView" th:each="star : ${#numbers.sequence(1, review.rating)}"  th:src="@{/img/star_full.png}">
+					<span class="content" style="margin-left:20px;">[[${review.content}]]</span>
+				</span>
+				<span class="writer">[[${review.member.userName}]] <span th:if="${review.actualPurchase == 1}">  ✅</span>
+				<span th:if="${session.id == review.member.userName}"><span class="editReview">✏️</span> &nbsp;<span class="deleteReview">❌</span><span class="rno" style="display:none;" th:text="${review.rno}"></span></span></span>
+			</li>
 		</ul>
 	</div>
 	</div>
@@ -145,13 +155,16 @@ const orderContainer = document.querySelector(".orderContainer");
 const reviewContainer = document.querySelector("#reviewContainer");
 const cartQuanEl = document.querySelector("#cartQuan");
 const stars = document.querySelectorAll(".star");
+const editReviewBtns = document.querySelectorAll(".editReview");
+const deleteReviewBtns = document.querySelectorAll(".deleteReview");
 const pno = [[${prod.pno}]];
 const status = [[${prod.status}]];
 let starSelected;
 let starPosition;
-
-//리뷰리스트에 별점 표기 핸들링
-
+let editStarSelected;
+let editStarPosition;
+let editrno;
+let editcontent;
 
 decBtn.addEventListener("click", function(e){
 	let orderQuan = Number(orderQuanEl.innerText);
@@ -249,6 +262,61 @@ function regReview(){
 		}
 	} 
 }
+
+//리뷰 수정 핸들링
+editReviewBtns.forEach(btn=>{
+	btn.addEventListener("click", function(e){
+		const reviewEl = e.target.parentElement.parentElement.parentElement;
+		editcontent = e.target.parentElement.parentElement.parentElement.querySelector(".content").innerText;
+		editrno = reviewEl.querySelector(".rno").innerText;
+		
+		
+		
+		reviewEl.innerHTML = `<div class='review_edit'>	
+			<img class='editstar' id='editstar1' src='/img/star.png'>
+			<img class='editstar' id='editstar2' src='/img/star.png'>
+			<img class='editstar' id='editstar3' src='/img/star.png'>
+			<img class='editstar' id='editstar4' src='/img/star.png'>
+			<img class='editstar' id='editstar5' src='/img/star.png'> <br>
+			<input id='editcontent' type='text' name='content' value='${editcontent}'>
+			<button onclick='editReview()'> 리뷰수정하기 </button>
+		</div>`
+	
+		//별점 클릭이벤트 핸들링
+		document.querySelectorAll(".editstar").forEach(star=>{
+			star.addEventListener("click", function(e){
+				console.log("zmfddd")
+				console.log(e.target)
+				document.querySelectorAll(".editstar").forEach(star=>{star.src="/img/star.png";})
+				editStarPosition = Number(e.target.id.slice(-1));
+				for(let i = 1; i <= editStarPosition; i++){
+					document.querySelector("#editstar"+ i).src = "/img/star_full.png"
+					editStarSelected = true;
+				}
+			})
+		})
+	     
+		
+		console.log("수정버튼 클릭");
+	
+	})
+})
+
+function editReview(){
+       location.href="/member/editReview?content="+editcontent+"&&rno="+editrno+"&&rating="+editStarPosition;
+}
+				
+//리뷰 삭제 핸들링
+deleteReviewBtns.forEach(btn=>{
+	btn.addEventListener("click", function(e){
+		if(confirm("정말로 해당 리뷰를 삭제하시겠습니까?")){
+			const rno = e.target.parentElement.querySelector(".rno").innerText;
+			location.href="/member/deleteReview?rno="+rno;
+		}
+		
+	})
+})
+
 </script>
 </body>
 </html>
