@@ -131,6 +131,7 @@ input{
 		<button onclick="return regReview(event)"> 리뷰등록하기 </button>
 	</div>
 	<div class="review_list">
+	<p style=" margin-bottom:50px;">리뷰 작성자 아이디 옆 ✅는 자사 사이트에서 현 상품을 구매한 구매 기록이 인증된 사용자를 의미합니다.</p>
 		<ul id="reviewContainer" th:if="${review != null}" th:each="review : ${review}">
 			<li>
 				<span class="reviews">
