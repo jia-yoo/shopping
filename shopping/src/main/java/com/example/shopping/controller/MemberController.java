@@ -108,10 +108,10 @@ public class MemberController {
 			//product테이블에서 pQuan 줄여주기
 			int newQuan = pQuan-sQuan;
 			prod.setPQuan(newQuan);
-			productRepo.save(prod);
 			if(newQuan == 0) {
 				prod.setStatus("soldout");
 			}
+			productRepo.save(prod);
 			return "true";
 		}else {
 			System.out.println("수량부족스");
@@ -145,10 +145,11 @@ public class MemberController {
 	 	    		//product테이블에서 pQuan 줄여주기
 	 	    		int newQuan = pQuan-quan;
 	 	    		prod.setPQuan(newQuan);
-	 	    		productRepo.save(prod);
+	 	    		//만약 주문 후 재고가 0이된다면 status 품절로 변경해주기
 	 	    		if(newQuan == 0) {
 	 					prod.setStatus("soldout");
 	 				}
+	 	    		productRepo.save(prod);
 	 	    		//장바구니 내에 주문된 아이템 지워주기
 	 	    		cartRepo.deleteByMnoAndPno(mno, pno);
 	 	    		return "true";
@@ -179,12 +180,25 @@ public class MemberController {
 		for(Cart c: cartList) {
 			Long pno = c.getProduct().getPno();
 			int quantity = productRepo.findById(pno).get().getPQuan();
-			if(quantity == 0 || quantity < c.getCQuan()) {
+			if(quantity == 0 || quantity < c.getCQuan() || c.getProduct().getStatus().equals("soldout")) {
 				soldoutList.add(c);
 			}
 		}
 		model.addAttribute("cartList", cartList);
 		model.addAttribute("soldoutList", soldoutList);
+	}
+	@RequestMapping("/changeQuanInCart")
+	private @ResponseBody String ChangeQuanInCart(HttpServletRequest request, @RequestParam("newQuan") int newQuan, @RequestParam("pno") Long pno,Model model) {
+		String userName = (String) request.getSession().getAttribute("id");
+		Member member = memberRepo.findByUserName(userName).get();
+		Long mno = member.getMno();
+		System.out.println(pno);
+		System.out.println(newQuan);
+		Cart cart = cartRepo.findByMnoAndPno(mno, pno);
+		cart.setCQuan(newQuan);
+		cartRepo.save(cart);
+		
+		return "true";
 	}
 	@RequestMapping("/addToCart")
 	private  @ResponseBody String addToCart(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("sQuan") int sQuan, Model model) {

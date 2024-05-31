@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Flaky filo - 플레키필로</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
 img{
@@ -63,13 +63,28 @@ input{
 	width:30px;
 }
 .overlay {
+  
    position: absolute;
    width: 1800px;
    height: 165px;
    background-color: rgba(0, 0, 0, 0.5); /* 배경색 및 투명도 */
    z-index: 99999; /* 다른 요소 위에 오도록 설정 */
    pointer-events: all; /* 모든 포인터 이벤트를 활성화 */
+   
+   display: flex; /* 플렉스 박스 레이아웃 사용 */
+   align-items: center; /* 수직 가운데 정렬 */
+   justify-content: center; /* 수평 가운데 정렬 */
+   color: white;
+   font-size:larger;
+   
 }
+.infoMsg{
+	color:red;
+}
+#inc, #dec{
+	padding:3px;
+}
+
 </style>
 </head>
 <body>
@@ -89,11 +104,11 @@ input{
 			<div th:each="cartList : ${cartList}" class="item">
 				<div><input class="checkBox" type="checkbox"></div>
 				<div><img th:src="@{|/images/user/${cartList.product.fileName}|}"></div>
-				<div>[[${cartList.product.pName}]]</div>
-				<div>
-					<span style="display:none;" id="dec">◀</span>
+				<div><a th:href="@{/user/prod_detail(pno=${cartList.product.pno})}">[[${cartList.product.pName}]]</a></div>
+				<div class="quanContainer">
+					<button style="display:none;" id="dec">◀</button>
 					<span class="orderQuan" th:text="${cartList.cQuan}">0</span>
-					<span style="display:none;" id="inc">▶</span>
+					<button style="display:none;" id="inc">▶</button>
 					<button class="changeQuanBtn">수량변경</button>
 				</div>
 				<div>[[${cartList.product.pPrice}]]</div>
@@ -124,29 +139,35 @@ let sum=0;
 
 
 if(soldoutList != null){
-	console.log("주문못하는 상품 존재")
-	console.log(soldoutList);
-	for(i=0; i <soldoutList.length; i++){
-		const pname = soldoutList[i].product.pname;
-		const pno = soldoutList[i].product.pno;
-		const availQuan = soldoutList[i].product.pquan; 
-		
-		if(availQuan == 0){
-			console.log(pname + "은 재고가 0이어서 단한개도 주문 못하므로 무조건 탭 비활성화")
-			let soldoutItem;
-			pnos.forEach(prodNo=>{
-				if(Number(prodNo.value) == pno){
-					const target = prodNo.parentElement.parentElement;
-					const overlay = document.createElement('span');
-					overlay.classList.add('overlay');
-					target.appendChild(overlay);
-					
-				}
-			})
-	}else{
-		console.log(pname + "은 재고가"+ availQuan+"이어서 재고 이상은 주문 불가")
-	}
-}
+		for(i=0; i <soldoutList.length; i++){
+			const pname = soldoutList[i].product.pname;
+			const pno = soldoutList[i].product.pno;
+			const availQuan = soldoutList[i].product.pquan; 
+			const status = soldoutList[i].product.status;
+			
+			if(status == "soldout"){
+				pnos.forEach(prodNo=>{
+					if(Number(prodNo.value) == pno){
+						const target = prodNo.parentElement.parentElement;
+						const overlay = document.createElement('span');
+						overlay.classList.add('overlay');
+						target.appendChild(overlay);
+						overlay.textContent = "품   절";
+					}
+				})
+			}else{
+				pnos.forEach(prodNo=>{
+					if(Number(prodNo.value) == pno){
+						const target = prodNo.parentElement.parentElement;
+		                 const quanContainer = target.querySelector(".quanContainer");
+		                 const message = document.createElement('span');
+		                 message.textContent = "(재고 : "+availQuan +")";
+		                 message.classList.add("infoMsg");
+		                 quanContainer.appendChild(message);
+					}
+				})
+			}
+		}
 }
 
 //수량 변경하기
@@ -173,7 +194,6 @@ changeQuanBtns.forEach(btn=>{
             btn.dataset.state = "viewing";
         } else {
           	//viewing상태일때는 수정할 수 있도록 바꿔주기
-
             // 수량칸 input으로 바꿔주기
     	    quan.innerHTML = "<input type='text' name='sQuan' value='"+ currentQuan + "'>";
 
@@ -181,14 +201,38 @@ changeQuanBtns.forEach(btn=>{
             decBtn.style.display = "inline";
             incBtn.style.display = "inline";
 
-            // 확인버튼을 다시 수량변경으로 바꿔주고 + editing으로 상태바꿔주기
+            // 확인버튼을 다시 수량변경으로 바꿔주기 
             btn.textContent = "확인";
-            btn.dataset.state = "editing";
+            
+            //확인버튼 클릭하는 순간 db에서 수량변경해주기
+            btn.addEventListener("click", function(){
+            	const newQuan = quan.textContent;
+            	const pno = btn.parentElement.parentElement.querySelector(".pno").value;
+            	   fetch("/member/changeQuanInCart?newQuan="+newQuan+"&&pno="+pno, {
+			       method: "POST",
+			       headers: {
+			           "Content-Type": "application/json"
+			       },
+			   })
+			   .then(response => {
+			       if (response.ok) {
+			    	   location.href="/member/cart";
+			           return response.json();
+			       }
+			       throw new Error("Network response was not ok.");
+			   })
+			   .catch(error => {
+			       console.error("There was a problem with the fetch operation:", error);
+			   });
+            })
             
             
-          //클릭으로 수량바꿔주는 버튼 
+            
+           //dataset editing으로 상태바꿔주기
+           btn.dataset.state = "editing";
+            
+          //화살표 클릭으로 수량바꿔주는 버튼 
             decBtn.addEventListener("click", function(e){
-    				console.log(e.target.parentElement.querySelector("input").value)
     				let orderQuan = Number(e.target.parentElement.querySelector("input").value);
     				orderQuan--;
     				if(orderQuan > 0){
@@ -208,7 +252,7 @@ changeQuanBtns.forEach(btn=>{
 
 deleteBtns.forEach(btn=>{
 	btn.addEventListener("click", function(e){
-	let pno = e.target.parentElement.querySelector("#pno").value;
+	let pno = e.target.parentElement.querySelector(".pno").value;
 	location.href="/member/deleteFromCart?pno="+pno;
 	})
 })
@@ -235,7 +279,7 @@ function goToOrder(){
 	
     checkBoxes.forEach(box => {
         if (box.checked) {
-            const pno = box.parentElement.parentElement.querySelector("#pno").value;
+            const pno = box.parentElement.parentElement.querySelector(".pno").value;
             const quan = box.parentElement.parentElement.querySelector(".orderQuan").textContent;
             selectedItems.push({ pno: pno, quan: quan });
             checkedBox++;
@@ -268,7 +312,7 @@ function goToOrder(){
         	alert("주문이 성공적으로 완료되었습니다. 메인화면으로 이동합니다.");
          location.href = "/";
         }else {
-        	alert("주문하려는 상품( "+data.pname +" )의 수량이 재고수량( "+ data.quantity +" 개)보다 많습니다. 다시 시도해주세요");
+        	alert("주문하려는 상품( "+data.pname +" )의 수량이 재고수량( "+ data.quantity +" 개) 보다 많습니다. 다시 시도해주세요");
         }
     })
     .catch(error => {

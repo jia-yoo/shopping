@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Flaky filo - 플레키필로</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
 
@@ -43,7 +43,7 @@ a, a:visited{
 		<ul th:each="mostSoldList : ${mostSoldList}">
 			<li class="pno" style="display:none;">[[${mostSoldList.pno}]]</li>
 			<li id="img" th:style="'background-image: url(/images/user/' + ${mostSoldList.fileName} + ');'">
-			<li><a id="pname" th:href="@{/user/prod_detail(pno=${mostSoldList.pno})}">[[${mostSoldList.pName}]]<img th:if="${mostSoldList.status =='soldout'}" src="/img/free-icon-out-of-stock-5578624.png.png"></a></li>	
+			<li><a id="pname" th:href="@{/user/prod_detail(pno=${mostSoldList.pno})}">[[${mostSoldList.pName}]]<img style="width:30px; height:30px;" th:if="${mostSoldList.status =='soldout'}" src="/img/free-icon-out-of-stock-5578624.png"></a></li>	
 			<li>₩[[${mostSoldList.pPrice}]]</li>	
 				
 		</ul>
@@ -53,9 +53,8 @@ a, a:visited{
 		<ul th:each="prodList : ${prodList}">
 			<li class="pno" style="display:none;">[[${prodList.pno}]]</li>
 			<li id="img" th:style="'background-image: url(/images/user/' + ${prodList.fileName} + ');'">
-			<li><a th:href="@{/user/prod_detail(pno=${prodList.pno})}">[[${prodList.pName}]]</a></li>	
+			<li><a th:href="@{/user/prod_detail(pno=${prodList.pno})}">[[${prodList.pName}]]<img style=" align-items:center; width:30px; height:30px;" th:if="${prodList.status =='soldout'}" src="/img/free-icon-out-of-stock-5578624.png"></a></li>	
 			<li>₩[[${prodList.pPrice}]]</li>	
-			<li th:if="${prodList.status =='soldout'}"><img src="/img/free-icon-out-of-stock-5110176.png"></li>	
 		</ul>
 	</div>
 

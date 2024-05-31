@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Flaky filo - 플레키필로</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
 img{
@@ -47,6 +47,9 @@ input{
 .review{
 margin-bottom:300px;
 }
+#inc, #dec{
+	padding:3px;
+}
 </style>
 </head>
 <body>
@@ -65,10 +68,6 @@ margin-bottom:300px;
 				<td>[[${prod.pPrice}]]</td>
 			</tr>
 			<tr>
-				<th>현 재고수량</th>
-				<td>[[${prod.pQuan}]]</td>
-			</tr>
-			<tr>
 				<th>상태 (판매/품절)</th>
 				<td th:if="${prod.status == 'onStock'}">판매중</td>
 				<td th:if="${prod.status == 'soldout'}">일시품절</td>
@@ -78,7 +77,7 @@ margin-bottom:300px;
 				<td>[[${prod.description}]]</td>
 			</tr>
 			<tr>
-			 <td colspan='2'>수량 : <span id="dec">◀</span><span id="orderQuan">1</span><span id="inc">▶</span></td>
+			 <td colspan='2'>수량 : <button id="dec">◀</button><span id="orderQuan">1</span><button id="inc">▶</button></td>
 			</tr>
 			<tr>
 			 <td colspan='2'>

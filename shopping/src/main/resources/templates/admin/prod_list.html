@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Flaky filo - 플레키필로</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
 <style>
 *{
@@ -51,6 +51,10 @@ a:hover{
 	padding:10px;
 	margin:10px;
 }
+.soldout{
+	color:red;
+}
+
 </style>
 </head>
 <body>
@@ -74,9 +78,9 @@ a:hover{
 			<td>[[${list.pno}]]</td>
 			<td><a th:href="@{/admin/prod_detail(pno=${list.pno})}">[[${list.pName}]]</a></td>
 			<td>[[${list.pPrice}]]</td>
-			<td>[[${list.pQuan}]]</td>
+			<td><span th:classappend="${list.status} == 'soldout' ? 'soldout' : ''" th:text="${list.pQuan}"></span></td>
 			<td>[[${list.pPrice*list.pQuan}]]</td>
-			<td>[[${list.status}]]</td>
+			<td><span th:classappend="${list.status} == 'soldout' ? 'soldout' : ''" th:text="${list.status}"></span></td>
 			<td>[[${list.description !=null ? list.description : "설명 없음"}]]</td>
 		</tr>
 		

@@ -15,4 +15,7 @@ public interface CartRepository extends JpaRepository<Cart, Long>{
 	
 	@Query(value="delete from cart where mno = :mno and pno = :pno", nativeQuery=true)
 	void deleteByMnoAndPno(@Param("mno") Long mno, @Param("pno") Long pno);
+	
+	@Query(value="select * from cart where mno = :mno and pno = :pno", nativeQuery=true)
+	Cart findByMnoAndPno(@Param("mno") Long mno, @Param("pno") Long pno);
 }
