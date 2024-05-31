@@ -242,7 +242,7 @@ public class MemberController {
 		return "true";
 	}
 	@RequestMapping("/reg_review")
-	private String regReview(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("content") String content, Model model) {
+	private String regReview(HttpServletRequest request, @RequestParam("pno") Long pno, @RequestParam("content") String content, @RequestParam("rating") int rating , Model model) {
 		String userName = (String) request.getSession().getAttribute("id");
 		Member member = memberRepo.findByUserName(userName).get();
 		Long mno = member.getMno();
@@ -251,7 +251,7 @@ public class MemberController {
 		review.setMember(member);
 		review.setProduct(prod);
 		review.setContent(content);
-
+		review.setRating(rating);
 		//이 상품을 실제 구매한적있는지 체크
 		if(!salesRepo.findByMnoAndPno(mno, pno).isEmpty()) {
 			//우리사이트에서 실제 구매한적 있는 경우

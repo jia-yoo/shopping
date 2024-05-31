@@ -39,5 +39,8 @@ public class Review extends BaseEntity{
 	
 	@Column
 	private int actualPurchase;
+	
+	@Column
+	private int rating;
 
 }

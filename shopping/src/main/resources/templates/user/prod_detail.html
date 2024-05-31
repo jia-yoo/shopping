@@ -29,6 +29,7 @@ table th, td {
 input{
 	padding:10px;
 	width:500px;
+	margin-top:40px;
 }
 .review_write{
 	margin:80px auto;
@@ -41,14 +42,35 @@ input{
 }
 #reviewContainer li{
 	display:flex;
-	padding:10px;
+	padding:10px 0px;
 	justify-content: space-between;
 }
 .review{
-margin-bottom:300px;
+	margin-bottom:300px;
 }
 #inc, #dec{
 	padding:3px;
+}
+.star{
+	width:40px;
+	height:40px;
+	margin:0;
+	padding:0;
+}
+.starView{
+	width:30px;
+	height:30px;
+	margin:0;
+	padding:0;
+}
+.reviews{
+	display:flex;
+	justify-content: space-between;
+	align-items:center;
+}
+.avgRating{
+	display:flex;
+	justify-content: center;
 }
 </style>
 </head>
@@ -87,18 +109,27 @@ margin-bottom:300px;
 			</div>
 			</td>
 			</tr>
-			
 		</table>
 	</div>	
 	
 	<div class="review">
+	<h1 class="title">상품 리뷰</h1>
+	<div class="avgRating">
+		<img style="width:100px; height:100px; margin:0;" th:src="@{/img/avg_star.png}">
+		<div><div style="font-size:x-large; color: #335E3B; margin-top:5px;">평균 별점</div> <div style="font-size:50px; margin-top:10px; color: #335E3B;">[[${avg}]]</div></div>
+	</div>
 	<div class="review_write">
+		<img class="star" id="star1" th:src="@{/img/star.png}">
+		<img class="star" id="star2" th:src="@{/img/star.png}">
+		<img class="star" id="star3" th:src="@{/img/star.png}">
+		<img class="star" id="star4" th:src="@{/img/star.png}">
+		<img class="star" id="star5" th:src="@{/img/star.png}"> <br>
 		<input id="content" type="text" name="content" placeholder="리뷰를 남겨보세요 b(￣▽￣)d">
-		<button onclick="regReview(event)"> 리뷰등록하기 </button>
+		<button onclick="return regReview(event)"> 리뷰등록하기 </button>
 	</div>
 	<div class="review_list">
 		<ul id="reviewContainer" th:if="${review != null}" th:each="review : ${review}">
-			<li><span>[[${review.content}]]</span> <span class="writer">[[${review.member.userName}]] <span th:if="${review.actualPurchase == 1}">  ✅</span></span> </li>
+			<li><span class="reviews"><img class="starView" th:each="star : ${#numbers.sequence(1, review.rating)}"  th:src="@{/img/star_full.png}"><span style="margin-left:20px;">[[${review.content}]]</span></span><span class="writer">[[${review.member.userName}]] <span th:if="${review.actualPurchase == 1}">  ✅</span></span> </li>
 		</ul>
 	</div>
 	</div>
@@ -112,9 +143,15 @@ const addToCartBtn = document.querySelector("#addToCartBtn");
 const goToOrderBtn = document.querySelector("#goToOrderBtn");
 const orderContainer = document.querySelector(".orderContainer");
 const reviewContainer = document.querySelector("#reviewContainer");
+const cartQuanEl = document.querySelector("#cartQuan");
+const stars = document.querySelectorAll(".star");
 const pno = [[${prod.pno}]];
 const status = [[${prod.status}]];
-const cartQuanEl = document.querySelector("#cartQuan");
+let starSelected;
+let starPosition;
+
+//리뷰리스트에 별점 표기 핸들링
+
 
 decBtn.addEventListener("click", function(e){
 	let orderQuan = Number(orderQuanEl.innerText);
@@ -186,11 +223,32 @@ addToCartBtn.addEventListener("click", function(){
 	
 })
 
-function regReview(){
-	const content = document.querySelector("#content");
-	location.href="/member/reg_review?pno="+pno+"&&content="+content.value;
-}
+//별점 클릭이벤트 핸들링
+stars.forEach(star=>{
+	star.addEventListener("click", function(e){
+		stars.forEach(star=>{star.src="/img/star.png";})
+		starPosition = Number(e.target.id.slice(-1));
+		for(let i = 1; i <= starPosition; i++){
+			document.querySelector("#star"+ i).src = "/img/star_full.png"
+			starSelected = true;
+		}
+	})
+})
 
+//리뷰 제출 핸들링
+function regReview(){
+	if([[${session.id}]] == null){
+		alert("리뷰는 회원만 남길 수 있습니다.")
+		return false;
+	}else{
+		if(document.querySelector("#content").value == "" || starSelected != true){
+			alert("리뷰나 별점은 빈칸일 수 없습니다. 별점 선택과 리뷰 내용을 입력해주세요")
+		}else{
+			const content = document.querySelector("#content");
+			location.href="/member/reg_review?pno="+pno+"&&content="+content.value+"&&rating="+starPosition;
+		}
+	} 
+}
 </script>
 </body>
 </html>

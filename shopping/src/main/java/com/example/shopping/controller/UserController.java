@@ -33,8 +33,10 @@ public class UserController {
 	private void userProdDetail(@RequestParam("pno") Long pno, Model model) {
 		Product prod = prodRepo.findById(pno).get();
 		List<Review> reviewList = reviewRepo.findAllByPno(pno);
+		Long avg = reviewRepo.getAvgReview(pno);
 		model.addAttribute("prod", prod);
 		model.addAttribute("review", reviewList);
+		model.addAttribute("avg", avg);
 	}
 	
 	@RequestMapping("/login")
