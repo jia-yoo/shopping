@@ -12,25 +12,34 @@
 	margin:100px auto;
 }
 form{
-	width:1800px;
+	width:720px;
 	margin:20px auto;
+	position:relative;
 }
 input[type="text"],input[type="password"]{
-	width:40%;
+	width:100%;
 	padding:10px;
 	margin-bottom:10px;
 }
+
 input[type="submit"]{
-	width:40%;
+	width:100%;
     padding:10px;
 	background-color:#EDEDE6;
 	color: #335E3B;
 }
 input[type="submit"]:hover{
-	width:40%;
+	width:100%;
     padding:10px;
 	background-color:#335E3B;
 	color: #EDEDE6;
+}
+#checkPw{
+	position:absolute;
+	right:10px;
+	top:67px;
+	font-size:large;
+
 }
 </style>
 </head>
@@ -38,20 +47,36 @@ input[type="submit"]:hover{
 <div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
 <h1 class="title">로그인</h1>
-	<form action="/member/mem_login" method="post">
+	<form action="/member/mem_login" method="post" onsubmit="return validation()">
 		<input type="text" name="userName" placeholder="아이디*"> <br>
-		<input type="password" name="pw" placeholder="비밀번호*"> <br>
+		<input type="password" name="pw" placeholder="비밀번호*"> <span id="checkPw">👁️</span><br>
 		<input type="submit" value="제출">
 	</form>
 </main>	
 <script th:inline="javascript">
-	if([[${result}]] != null){
-		if([[${result}]] == "wrongPw"){
-			alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요");
-		}else if([[${result}]] == "noId"){
-			alert("입력하신 아이디에 일치하는 회원정보가 없습니다. 다시 입력해주세요");
+	const userName = document.querySelector("input[type=text]");
+	const pw = document.querySelector("input[type=password]");
+	const checkPw = document.querySelector("#checkPw");
+	
+	function validation(){
+		if(userName.value == "" || pw.value == ""){
+			alert("아이디와 비밀번호 입력란이 비었습니다. 다시 입력해주세요")
+			return false;
 		}
+		return false;
+		
 	}
+	
+	checkPw.addEventListener("click", function(e){
+		const pwElement = e.target.previousElementSibling;
+		pwElement.classList.toggle("active");
+		if (pwElement.classList.contains("active")) {
+			pwElement.setAttribute("type", "text")
+		} else {
+			pwElement.setAttribute("type", "password")
+		}
+		console.log(pw.value);
+	})
 </script>
 </body>
 </html>
