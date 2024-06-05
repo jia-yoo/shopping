@@ -1,2 +1,2 @@
 /.metadata/
-*.json
+/shopping/src/main/resources/*.json
