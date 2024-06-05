@@ -16,7 +16,8 @@ form{
 	margin:20px auto;
 	position:relative;
 }
-input[type="text"],input[type="password"]{
+
+input[type="text"], input[type="password"]{
 	width:100%;
 	padding:10px;
 	margin-bottom:10px;
@@ -49,10 +50,11 @@ input[type="submit"]:hover{
 <h1 class="title">로그인</h1>
 	<form action="/member/mem_login" method="post" onsubmit="return validation()">
 		<input type="text" name="userName" placeholder="아이디*"> <br>
-		<input type="password" name="pw" placeholder="비밀번호*"> <span id="checkPw">👁️</span><br>
+		<input type="password" name="pw" placeholder="비밀번호*"> <span id="checkPw">👁️</span> <br>
 		<input type="submit" value="제출">
 	</form>
 </main>	
+
 <script th:inline="javascript">
 	const userName = document.querySelector("input[type=text]");
 	const pw = document.querySelector("input[type=password]");
@@ -62,10 +64,13 @@ input[type="submit"]:hover{
 		if(userName.value == "" || pw.value == ""){
 			alert("아이디와 비밀번호 입력란이 비었습니다. 다시 입력해주세요")
 			return false;
+		}else{
+			return true;
 		}
 		return false;
-		
 	}
+	
+	
 	
 	checkPw.addEventListener("click", function(e){
 		const pwElement = e.target.previousElementSibling;
@@ -77,6 +82,7 @@ input[type="submit"]:hover{
 		}
 		console.log(pw.value);
 	})
+	
 </script>
 </body>
 </html>

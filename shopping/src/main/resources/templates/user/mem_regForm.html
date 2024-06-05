@@ -15,6 +15,7 @@ form{
 	width:1800px;
 	margin:20px auto;
 }
+
 input[type="text"],input[type="password"]{
 	width:40%;
 	padding:10px;
@@ -32,6 +33,11 @@ input[type="submit"]:hover{
 	background-color:#335E3B;
 	color: #EDEDE6;
 }
+
+input[name="userName"]{
+	width:34.5%;
+	margin-bottom:10px;
+}
 </style>
 </head>
 
@@ -39,8 +45,8 @@ input[type="submit"]:hover{
 <div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
 <main>
 <h1 class="title">회원가입</h1>
-	<form action="/member/mem_regist" method="post">
-		<input type="text" name="userName" placeholder="아이디*"> <br>
+	<form action="/member/mem_regist" method="post" onsubmit="return validation()">
+		<input type="text" name="userName" placeholder="아이디*"> <button onclick="dupliCheck(event)">중복확인</button><br>
 		<input type="password" name="pw" placeholder="비밀번호*">  <br>
 		<input type="password" name="pw2" placeholder="비밀번호확인*">  <br>
 		<input type="text" name="name" placeholder="이름*">  <br>
@@ -49,5 +55,61 @@ input[type="submit"]:hover{
 		<input type="submit" value="제출">
 	</form>
 </main>
+<script>
+let dupliChecked = false;
+const usernameInput = document.querySelector("input[name=userName]");
+
+
+//아이디 중복확인 후에 변경하면 return false;
+usernameInput.addEventListener("change", function(){
+	dupliChecked = false;
+})
+
+
+//아이디 중복확인
+function dupliCheck(e){
+	e.preventDefault();
+	const username = document.querySelector("input[name=userName]").value;
+	const xhttp = new XMLHttpRequest();
+	  xhttp.onload = function() {
+	    if(this.responseText == 'existed'){
+	    	alert("이미 사용 중인 아이디 입니다. 다시 시도해주세요")
+	    }else if(username == ""){
+	    	alert("아이디가 비어있습니다. 중복확인을 위해서는 아이디를 입력해주세요")
+	    }else{
+	    	alert("사용가능한 아이디 입니다.")
+	    	dupliChecked = true;
+	    }
+}
+	  xhttp.open("GET", "/user/dupliCheck?username="+username, true);
+	  xhttp.send();
+}
+
+function validation(){
+	const userName = document.querySelector("input[name=userName]").value;
+	const pw = document.querySelector("input[name=pw]").value;
+	const pw2 = document.querySelector("input[name=pw2]").value;
+	const name = document.querySelector("input[name=name]").value;
+	const addr = document.querySelector("input[name=addr]").value;
+	const tel = document.querySelector("input[name=tel]").value;
+	
+	if(userName == "" || pw == "" || pw2 == "" || name == "" || addr == "" || tel == ""){
+		alert("필수 입력란이 비었습니다. 다시 입력해주세요")
+		return false;
+	}else if(dupliChecked == false){
+		alert("회원가입을 위해서는 아이디 중복확인이 필수 입니다. 아이디 중복확인을 해주세요")
+		return false;
+	}else if(pw != pw2){
+		alert("두 비밀번호가 일치하지 않습니다. 다시 입력해주세요")
+		return false;
+	}else{
+		return true;
+	}
+}
+
+
+
+
+</script>
 </body>
 </html>

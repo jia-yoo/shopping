@@ -7,9 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.shopping.entity.Product;
 import com.example.shopping.entity.Review;
+import com.example.shopping.repository.MemberRepository;
 import com.example.shopping.repository.ProductRepository;
 import com.example.shopping.repository.ReviewRepository;
 
@@ -21,6 +23,8 @@ public class UserController {
 	private ProductRepository prodRepo;
 	@Autowired
 	private ReviewRepository reviewRepo;
+	@Autowired
+	private MemberRepository memberRepo;
 	
 	
 	@RequestMapping("/shop")
@@ -45,6 +49,14 @@ public class UserController {
 	
 	@RequestMapping("/mem_regForm")
 	private void memRegForm() {
+	}
+	@RequestMapping("/dupliCheck")
+	private @ResponseBody String dupliCheck(@RequestParam("username") String username) {
+		if(!memberRepo.findByUserName(username).isEmpty()) {
+			return "existed";
+		}else {
+			return "empty";
+		}
 	}
 
 }
