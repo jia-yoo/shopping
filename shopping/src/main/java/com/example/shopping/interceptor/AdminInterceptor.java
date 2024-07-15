@@ -12,6 +12,7 @@ public class AdminInterceptor implements HandlerInterceptor{
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 요청 처리 전 로직
+		
         String id = (String) request.getSession().getAttribute("id");
         if(id != null && id.equals("admin")) {
         	return true;
