@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Flaky filo - 플레키필로</title>
 <link rel="stylesheet" type="text/css" href="/css/styles.css">
+
 <style>
 
 #img{
@@ -33,7 +34,69 @@ a, a:visited{
 	margin:10px;
 	
 }
+
 </style>
+ <script th:inline="javascript" type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging.js';
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+          apiKey: "AIzaSyAhbnSObvhNDXgvkcHCXPgI90-kajOp7sc",
+		  authDomain: "flakyfilo-9fd34.firebaseapp.com",
+		  projectId: "flakyfilo-9fd34",
+		  storageBucket: "flakyfilo-9fd34.appspot.com",
+		  messagingSenderId: "499183470309",
+		  appId: "1:499183470309:web:b05b771a11f226d453360c",
+		  measurementId: "G-DRZDDY096X"
+    };
+
+     // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // Initialize Firebase Cloud Messaging and get a reference to the service
+    const messaging = getMessaging(app);
+
+    // Request permission and get token
+    async function requestPermissionAndGetToken() {
+      try {
+        // Request notification permission
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+
+          // Get token
+          const token = await getToken(messaging, { vapidKey: 'BOrgpfCtDLlRyz7DtkiZ9T4ZUb5_LFRlxeaIGa-NC62P63uxNgU0im7C33pT1_uAfVZa6C7IAApp8jf8-9C_Nj8' });
+          console.log('FCM Token:', token);
+			console.log("ddd");
+
+
+          // Send the token to your server
+          await fetch('/member/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token : token, userName: 'aaa' })
+          })
+        } else {
+          console.log('Notification permission denied.');
+        }
+      } catch (err) {
+        console.log('Unable to get permission to notify.', err);
+      }
+    }
+
+    // Call the function to request permission and get the token
+    requestPermissionAndGetToken();
+
+    // Handle incoming messages
+    onMessage(messaging, (payload) => {
+      console.log('Message received. ', payload);
+      // Customize notification here
+    });
+  </script>
 </head>
 <body>
 <div th:replace="~{/fragments/fragment-header.html :: fragment-nav}"></div>
@@ -57,7 +120,7 @@ a, a:visited{
 			<li>₩[[${prodList.pPrice}]]</li>	
 		</ul>
 	</div>
-
+<button onclick="clickMe()">여기클릭해봐욥</button>
 </main>
 <script th:inline="javascript">
 const items = document.querySelectorAll("#img");
@@ -71,7 +134,17 @@ items.forEach(item=>{
 	})
 })
 
-</script>
+function clickMe(){
+	 fetch('/member/test', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+       })
+     
+}
 
+   
+</script>
 </body>
 </html>

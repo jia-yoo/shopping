@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import com.example.shopping.repository.MemberRepository;
 import com.example.shopping.repository.ProductRepository;
 import com.example.shopping.repository.ReviewRepository;
 import com.example.shopping.repository.SalesRepository;
+import com.example.shopping.service.NotificationService;
 import com.google.gson.Gson;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +47,12 @@ public class MemberController {
 	@Autowired
 	private ReviewRepository reviewRepo;
 	
+	 @Autowired
+	    private NotificationService notificationService;
+
+	    // 사용자 정보를 저장하는 임시 저장소 (데모 목적으로 사용)
+	    private Map<String, String> userTokens = new HashMap<>();
+	
 	
 	@RequestMapping("/mem_regist")
 	private String memRegist(Member member) {
@@ -53,19 +62,62 @@ public class MemberController {
 	}
 	
 	@RequestMapping("/mem_login")
-	private String memLogin(HttpServletRequest request, @RequestParam("userName") String userName, @RequestParam("pw") String pw, Model model) {
+	private @ResponseBody String memLogin(HttpServletRequest request, @RequestParam("userName") String userName, @RequestParam("pw") String pw, Model model) {
 		if(memberRepo.findByUserName(userName).isPresent()) {
 			Member member = memberRepo.findByUserName(userName).get();
+			String token = "fhQ2PmGWWrf8OhfetzMB7O:APA91bHllDZTwPNVb52OPHTRp4LQENL2a5vaDBXHf0lk86UGf7jXKPe5V23K_8AfzRF3ND6Prn0kQLBx1yzS-Cv4hoER3KVqWCXsG3LyWvJgNYgby9UdI43L5tkBsjFcMZhbkp7ZKO0_"; // 실제로는 DB에서 가져옴
+			System.out.println(token);
 			if(member.getPw().equals(pw)) {
 				request.getSession().setAttribute("id", userName);
+				notificationService.sendNotification(token, "로그인 알림", "로그인 성공!");
+				
+				System.out.println("fdfffffffffffffffffffffffff");
 				return "redirect:/";
 			}
 			model.addAttribute("result", "wrongPw");
 			return "redirect:/user/login";
 		}
 		model.addAttribute("result", "noId");
+		
+		
+		
+		
+		
 		return "redirect:/user/login";
 	}
+	
+	@PostMapping("/test")
+	private @ResponseBody String test() {
+		
+			String token = "fhQ2PmGWWrf8OhfetzMB7O:APA91bHllDZTwPNVb52OPHTRp4LQENL2a5vaDBXHf0lk86UGf7jXKPe5V23K_8AfzRF3ND6Prn0kQLBx1yzS-Cv4hoER3KVqWCXsG3LyWvJgNYgby9UdI43L5tkBsjFcMZhbkp7ZKO0_"; // 실제로는 DB에서 가져옴
+			
+				notificationService.sendNotification(token, "번겁슙니다", "알림성공추카드려욥!");
+				
+					
+		
+		
+		
+		return "알림이갔을깝쑝??????";
+	}
+	
+	 // 임시로 사용자별 FCM 토큰을 저장합니다. 실제로는 DB에 저장해야 합니다.
+    @PostMapping("/register")
+    public ResponseEntity<String> registerToken(@RequestBody Map<String, String> userTokens) {
+    	System.out.println("실행");
+    	System.out.println(userTokens);
+    	System.out.println(userTokens.get("token"));
+    	System.out.println(userTokens.get("userName"));
+    	
+    	String userName = userTokens.get("userName");
+ 		String token = userTokens.get("token");
+    	
+        userTokens.put(userName, token); // 토큰 저장 로직 추가
+        return ResponseEntity.ok("Token registered successfully");
+    }
+	
+	
+	
+	
 	@RequestMapping("/member_editForm")
 	private void memEditForm(HttpServletRequest request, Model model) {
 		String userName = (String) request.getSession().getAttribute("id");

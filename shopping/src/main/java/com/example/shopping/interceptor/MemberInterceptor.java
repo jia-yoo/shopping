@@ -20,13 +20,14 @@ public class MemberInterceptor implements HandlerInterceptor{
         // 요청 처리 전 로직
         String userName = (String) request.getSession().getAttribute("id");
         
-        if(userName != null && !memberRepo.findByUserName(userName).isEmpty()) {
-        	return true;
-        }else{
-        	// 관리자가 아닌 경우 접근 차단
-            response.sendRedirect("/access-denied");
-        	return false;
-        }
+//        if(userName != null && !memberRepo.findByUserName(userName).isEmpty()) {
+//        	return true;
+//        }else{
+//        	// 관리자가 아닌 경우 접근 차단
+//            response.sendRedirect("/access-denied");
+//        	return false;
+//        }
+        return true;
     }
 
 }
